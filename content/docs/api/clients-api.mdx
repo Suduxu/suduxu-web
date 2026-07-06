@@ -1,0 +1,236 @@
+---
+title: Clients API
+icon: Smartphone
+description: Manage connected devices and communicate with individual clients or broadcast targets.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+Clients represent connected devices inside the Suduxu runtime. Each client exposes control, input state, and messaging capabilities through a unified API.
+
+---
+
+## Retrieving client meta data
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+let clients: Vec<SuduxuDevice> = find_all_clients();
+let client1: Option<SuduxuDevice> = find_client_by_id(1);
+```
+</Tab>
+<Tab value="Unity">
+```cs
+List<SuduxuDevice> clients = suduxu.FindAllClients();
+SuduxuDevice client1 = suduxu.FindClientById(1);
+```
+</Tab>
+</Tabs>
+
+## Client access
+
+<Tabs items={["Rust", "Unity"]}>
+
+<Tab value="Rust">
+
+Clients are accessed through explicit handles.
+
+```rust
+for_client(id)
+for_broadcast()
+```
+
+The default client id to be used is configured when initializing Suduxu, with `0` reserved for broadcast.
+</Tab>
+<Tab value="Unity">
+```cs
+suduxu.Input.For(id);
+suduxu.Client.Broadcast();
+```
+
+The default client id to be used is configured in the Unity Editor on the `Suduxu Component` element, with `0` reserved for broadcast.
+</Tab>
+</Tabs>
+
+---
+
+## Sending commands
+
+Clients support bidirectional communication via payload-based commands.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+## Vibration
+
+```rust
+for_client(id).vibrate(750, VibrationStrength::Medium, VibrationType::Custom);
+```
+
+## Sound
+
+```rust
+for_client(id).play_sound("click");
+```
+
+<Callout type="info">
+For a sound to be played, it must be included in the `suduxu.json` configuration file and to play it, it's name must be provided
+</Callout>
+
+## Sensor control
+
+```rust
+for_client(id).send_sensor_data(true);
+```
+
+This command enables or disables the flow of sensor data from the client device.
+
+## Frame rate
+
+```rust
+for_client(id).set_frame_rate(60);
+```
+
+<Callout type="info">
+The frame rate can be set to any value between 10 and 200 FPS.
+</Callout>
+
+<Callout type="warning">
+Setting the frame rate to a very high value may impact performance. Furthermore clients can decide in the settings, what their maximum frame rate is, so the command may not always succeed in setting the desired frame rate, although it will be clamped to the maximum supported by the client.
+</Callout>
+
+## Logging
+
+```rust
+for_client(id).log(LogLevel::Info, "Message", Some("Title"));
+```
+
+## File
+
+```rust
+for_client(id).file("theme");
+```
+
+This command requests a clients to load a file from the file server.
+
+</Tab>
+<Tab value="Unity">
+## Vibration
+
+```cs
+suduxu.Client.For(id).Vibrate(750, VibrationStrength.Medium, VibrationType.Custom);
+```
+
+## Sound
+
+```cs
+suduxu.Client.For(id).PlaySound("click");
+```
+<Callout type="info">
+For a sound to be played, it must be included in the `suduxu.json` configuration file and to play it, it's name must be provided
+</Callout>
+## Sensor control
+
+```cs
+suduxu.Client.For(id).SendSensorData(true);
+```
+This command enables or disables the flow of sensor data from the client device.
+
+## Frame rate
+
+```cs
+suduxu.Client.For(id).SetFrameRate(60);
+```
+<Callout type="info">
+The frame rate can be set to any value between 10 and 200 FPS.
+</Callout>
+<Callout type="warning">
+Setting the frame rate to a very high value may impact performance. Furthermore clients can decide in the settings, what their maximum frame rate is, so the command may not always succeed in setting the desired frame rate, although it will be clamped to the maximum supported by the client.
+</Callout>
+
+## Logging
+
+```cs
+suduxu.Client.For(id).Log(LogLevel.Info, "Message", "Title");
+```
+
+## File
+
+```cs
+suduxu.Client.For(id).File("theme");
+```
+
+This command requests a clients to load a file from the file server.
+</Tab>
+</Tabs>
+
+---
+
+## Input state queries
+
+Clients can query real-time input state from devices.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+for_client(id).get_button_released(ButtonInputType::A); // Returns true if the button was released (Cancel/Up) in the current frame
+for_client(id).get_button_down(ButtonInputType::A); // Returns true if the button is currently being pressed (Down) in the current frame
+for_client(id).get_button(ButtonInputType::A); // Returns true if the button was pressed (Pressed/Down) in the current frame
+for_client(id).get_button_up(ButtonInputType::A); // Returns true if the button was released (Up) in the current frame
+for_client(id).get_button_in_state(ButtonInputType::A, ButtonInputState::Pressed); // Returns true if the button is in the specified state in the current frame
+```
+
+</Tab>
+<Tab value="Unity">
+```cs
+suduxu.Input.For(id).GetButtonReleased(ButtonInputType.A); // Returns true if the button was released (Cancel/Up) in the current frame
+suduxu.Input.For(id).GetButtonDown(ButtonInputType.A); // Returns true if the button is currently being pressed (Down) in the current frame
+suduxu.Input.For(id).GetButton(ButtonInputType::A); // Returns true if the button was pressed (Pressed/Down) in the current frame
+suduxu.Input.For(id).GetButtonUp(ButtonInputType.A); // Returns true if the button was released (Up) in the current frame
+suduxu.Input.For(id).GetButtonInState(ButtonInputType.A, ButtonInputState.Pressed); // Returns true if the button is in the specified state in the current frame
+```
+</Tab>
+</Tabs>
+
+---
+
+## Direct client operations
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+disconnect_client(id);
+disconnect_all();
+```
+</Tab>
+<Tab value="Unity">
+```cs
+suduxu.DisconnectClient(id);
+suduxu.DisconnectAll();
+```
+</Tab>
+</Tabs>
+
+---
+
+## Notes
+
+- All operations are asynchronous at runtime level
+- Commands are serialized into payloads before transmission
+- Input state is polled from native runtime and may lag slightly behind real-time events
+
+<Callout type="info">
+In order to use the `suduxu` object in Unity it first needs to be injected, this is achieved the following way:
+
+```cs
+public class SuduxuExample : MonoBehaviour {
+  [injected]
+  private Suduxu suduxu;
+}
+```
+
+Otherwise it can also be called like this:
+```cs
+Suduxu.Instance
+```
+</Callout>

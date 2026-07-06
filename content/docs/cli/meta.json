@@ -1,0 +1,11 @@
+{
+    "title": "CLI",
+    "icon": "Terminal",
+    "pages": [
+        "server-commands",
+        "config-commands",
+        "logs",
+        "themes",
+        "utils"
+    ]
+}

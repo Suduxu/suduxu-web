@@ -1,0 +1,9 @@
+{
+    "title": "Reference",
+    "icon": "Compass",
+    "pages": [
+        "data-models",
+        "config",
+        "troubleshooting"
+    ]
+}

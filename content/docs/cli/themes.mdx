@@ -1,0 +1,178 @@
+---
+title: Themes
+icon: Palette
+description: Create, preview, and publish HTML or XML-based control themes for Suduxu devices.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+Themes define the interactive layout and input structure shown on the client device. Suduxu supports two theme formats:
+
+- **HTML Themes** (recommended): full WebView-based layouts using `sdx-*` components
+- **XML Themes**: structured layouts for constrained or legacy environments
+
+---
+
+## Theme Workflow
+
+<Tabs items={["Create", "Edit", "Reload", "Publish"]}>
+  <Tab value="Create">
+
+Start the interactive theme editor:
+
+```bash
+suduxu theme edit
+```
+
+Choose:
+- HTML theme
+- XML theme
+
+A base layout file is created in:
+
+```
+dev/in/layout.html
+dev/in/layout.xml
+```
+
+  </Tab>
+
+  <Tab value="Edit">
+
+Edit the generated layout file directly:
+
+```
+dev/in/layout.html
+```
+
+HTML themes support full WebView rendering, meaning you can freely structure UI using Suduxu components.
+
+  </Tab>
+
+  <Tab value="Reload">
+
+    Reload the current layout into the running server:
+
+    ```bash
+    r
+    ```
+
+    Inside the TUI editor, pressing `r`:
+
+    - Reads the current layout file
+    - Sends it to the file server
+    - Broadcasts it to connected clients
+
+  </Tab>
+
+  <Tab value="Publish">
+
+Enter a filename and persist the layout:
+
+```text
+p → enter filename → Enter
+```
+
+This moves the layout from:
+
+```
+dev/in/layout.html
+```
+
+to:
+
+```
+dev/out/<name>.html
+```
+
+  </Tab>
+</Tabs>
+
+---
+
+## HTML Themes
+
+HTML themes run inside a WebView on the client device, giving full control over layout, styling, and interaction.
+
+You can use all Suduxu Web Theme components:
+
+- `sdx-button`
+- `sdx-dpad`
+- `sdx-joystick`
+- `sdx-exit-button`
+
+### Base template
+
+When creating a new HTML theme, Suduxu generates a minimal template:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <script defer src="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxbutton.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxexitbutton.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxdpad.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxjoystick.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxbutton.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxexitbutton.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxdpad.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0/dist/sdxjoystick.min.css">
+</head>
+<body>
+
+</body>
+</html>
+```
+
+---
+
+## XML Themes
+
+XML themes are structured layouts used for simpler or constrained rendering environments.
+
+Typical use cases:
+- lightweight UI layouts
+- minimal rendering overhead
+- fallback compatibility
+
+XML themes follow the same lifecycle (create → edit → reload → publish), but use `.xml` instead of `.html`.
+
+---
+
+## File Structure
+
+```
+dev/
+  in/
+    layout.html
+    layout.xml
+  out/
+    <published-themes>.html
+    <published-themes>.xml
+```
+
+---
+
+## Internal Behavior (important for understanding reload)
+
+When you press reload in the editor:
+
+1. The current layout is read from disk
+2. It is wrapped into a `FileData` theme package
+3. Sent to the file server (`SuduxuFileServer`)
+4. Broadcast to all connected clients via payload
+
+This means changes apply immediately without restarting the server.
+
+---
+
+## Notes
+
+<Callout type="warning">
+The editor runs in a terminal UI. Exiting without publishing will delete temporary layout files.
+</Callout>
+```

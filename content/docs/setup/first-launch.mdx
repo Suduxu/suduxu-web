@@ -1,0 +1,117 @@
+---
+title: First launch
+icon: Play
+description: Start Suduxu for the first time and verify that your installation is working correctly.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# First Launch
+
+After completing the installation and setup process, the next step is starting Suduxu and connecting your first device.
+
+## Launching Suduxu
+
+<Tabs items={["Unity", "Rust", "CLI"]}>
+  <Tab value="Unity">
+
+  Add the **Suduxu Component** prefab to your scene and start the application.
+
+  The Unity SDK automatically handles:
+  
+  - Runtime initialization
+  - Configuration loading
+  - Event registration
+  - Server startup
+
+  </Tab>
+
+  <Tab value="Rust">
+
+  Initialize Suduxu before launching the runtime:
+
+  ```rust
+  init_suduxu(
+      SuduxuBehaviourConfiguration::broadcast("DLL/suduxu")
+  )?;
+
+  launch_suduxu()?;
+  ```
+
+  Suduxu runs in its own thread and should remain active for the lifetime of your application.
+
+> See Reference/Data-Models for details on the [`SuduxuBehaviourConfiguration`](/docs/reference/data-models#suduxubehaviourconfiguration) data model.
+  </Tab>
+
+  <Tab value="CLI">
+
+  Start the server using:
+
+  ```bash
+  suduxu server start
+  ```
+
+  Verify that the server is running:
+
+  ```bash
+  suduxu server status
+  ```
+
+  </Tab>
+</Tabs>
+
+## Verify startup
+
+A successful launch should result in:
+
+- The runtime starting without errors
+- Network listeners becoming available
+- A QR code being generated
+- The server accepting client connections
+
+You can verify the current server status through the CLI:
+
+```bash
+suduxu server status
+```
+
+Expected output (with varying addresses and file-server status):
+
+```text
+Server Status:
+TCP Address: 127.0.0.1:9000
+UDP Address: 127.0.0.1:9001
+File Address: Not running
+Control Address: 127.0.0.1:50676
+```
+
+## Connect a device
+
+Once the server is running:
+
+1. Open the Suduxu mobile application.
+2. Scan the generated QR code or connect manually via ip address.
+3. Accept the connection.
+4. Wait for the device to appear as a connected client.
+
+<Callout type="info">
+The QR code contains the connection information required for automatic pairing.
+</Callout>
+
+## Verify communication
+
+After connecting a device you should be able to:
+
+- Receive button input
+- Receive joystick input
+- Access device information
+- Send vibration commands
+- Send logs to the device
+- Receive sensor data (if enabled)
+
+A connected device indicates that networking, configuration, and runtime initialization are working correctly.
+
+## Next Step
+
+Continue with the Overview section to understand Suduxu's architecture, or jump directly to the API documentation to start interacting with connected devices.

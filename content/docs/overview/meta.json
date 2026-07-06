@@ -1,0 +1,9 @@
+{
+    "title": "Overview",
+    "icon": "Compass",
+    "pages": [
+        "what-is-suduxu",
+        "architecture",
+        "quick-start"
+    ]
+}

@@ -1,0 +1,791 @@
+---
+title: Data Models
+icon: Database
+description: Core runtime data structures and configuration contracts used across Suduxu.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+## Behaviour Configuration
+
+The `SuduxuBehaviourConfiguration` defines how the runtime is initialized and how it connects to the underlying ABI layer.
+
+It is required before calling any lifecycle or runtime functions.
+
+### SuduxuBehaviourConfiguration
+
+Represents the primary startup configuration for a Suduxu runtime instance.
+
+<Tabs items={["Rust"]}>
+    <Tab value="Rust">
+    ```rs
+    pub struct SuduxuBehaviourConfiguration {
+        pub dll_path: PathBuf,
+        pub default_id: u16,
+    }
+    ```
+    </Tab>
+</Tabs>
+
+### SuduxuConfig
+
+Represents the runtime configuration loaded from `suduxu.json` or provided by the host environment.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub struct SuduxuConfig {
+    pub server: Server,
+    pub logging: Logging,
+    pub security: Security,
+    pub file_sharing: FileSharing,
+    pub devices: Devices,
+    pub screen_capture: ScreenCapture,
+    pub sensors: Sensors,
+    pub developer: Developer,
+    pub health_check: HealthCheck,
+}
+
+pub struct Server {
+    pub address: String,
+    pub port: Option<u16>,
+    pub tcp_port: Option<u16>,
+    pub udp_port: Option<u16>,
+    pub file_port: Option<u16>,
+    pub connection_strategy: ConnectionStrategy,
+    pub list: Option<Vec<String>>,
+    pub rate_limit: RateLimit,
+}
+
+pub struct Logging {
+    pub debug_level: LogLevel,
+    pub log_file: Option<String>,
+    pub max_log_size: Option<u64>,
+    pub log_to_console: bool,
+}
+
+pub struct Security {
+    pub enabled: bool,
+    pub password: Option<u32>
+}
+
+pub struct FileSharing {
+    pub enabled: bool,
+    pub shared_directory: Option<String>,
+    pub files: Option<Vec<SharedFile>>,
+    pub initially_loaded: Option<Vec<String>>
+}
+
+pub struct Devices {
+    pub initially_send_sensor_data: bool,
+    pub max_devices: Option<u16>,
+    pub allowed_device_types: Vec<OsType>,
+    pub initial_frame_rate: u16,
+}
+
+pub struct ScreenCapture {
+    pub enabled: bool,
+    pub capture_on_server: bool,
+    pub capture_directory: Option<String>,
+}
+
+pub struct Sensors {
+    pub accelerometer: bool,
+    pub gyroscope: bool,
+    pub magnetometer: bool,
+    pub temperature: bool,
+    pub humidity: bool,
+    pub pressure: bool,
+    pub light: bool,
+}
+
+pub struct Developer {
+    pub prefer_cli: bool,
+    pub allow_mocked_sensors: bool,
+    pub allow_mocked_buttons: bool,
+}
+
+pub struct HealthCheck {
+    pub server: HealthCheckConfig,
+    pub client: HealthCheckConfig,
+}
+
+pub enum ConnectionStrategy {
+    Whitelist,
+    Blacklist,
+    Open,
+    #[serde(other)]
+    Invalid
+}
+
+pub struct RateLimit {
+    pub enabled: bool,
+    pub max_tcp_requests_per_minute: Option<u16>,
+}
+
+pub enum OsType {
+    Android,
+    #[serde(rename = "iOS")]
+    IOS,
+    Windows,
+    Linux,
+    #[serde(rename = "macOS")]
+    MacOS,
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+pub struct HealthCheckConfig {
+    pub enabled: bool,
+    pub interval_ms: Option<u64>,
+    pub timeout_ms: Option<u64>,
+}
+
+pub struct SharedFile {
+    pub name: String,
+    pub path: String,
+    pub r#type: SharedFileType,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub theme_constraints: Option<ThemeConstraints>
+}
+
+pub enum SharedFileType {
+    Audio,
+
+    #[serde(rename = "Lua-Theme")]
+    LuaTheme,
+
+    #[serde(rename = "XML-Theme")]
+    XMLTheme,
+
+    Screenshot,
+    #[serde(other)]
+    Invalid
+}
+
+pub struct ThemeConstraints {
+    pub max_width: Option<u16>,
+    pub min_width: Option<u16>,
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public class SuduxuConfig
+{
+    public Server server;
+    public Logging logging;
+    public Security security;
+    public FileSharing fileSharing;
+    public Devices devices;
+    public ScreenCapture screenCapture;
+    public Sensors sensors;
+    public Developer developer;
+    public HealthCheck healthCheck;
+}
+
+public class Server
+{
+    public string address;
+    public ushort? port;
+    public ushort? tcpPort;
+    public ushort? udpPort;
+    public ushort? filePort;
+    public ConnectionStrategy connectionStrategy;
+    public List<string> list;
+    public RateLimit rateLimit;
+}
+
+public class Logging
+{
+    public LogLevel debugLevel;
+    public string logFile;
+    public ulong? maxLogSize;
+    public bool logToConsole;
+}
+
+public class Security
+{
+    public bool enabled;
+    public uint? password;
+}
+
+public class FileSharing
+{
+    public bool enabled;
+    public string sharedDirectory;
+    public List<SharedFile> files;
+    public List<string> initiallyLoaded;
+}
+
+public class Devices
+{
+    public bool initiallySendSensorData;
+    public ushort? maxDevices;
+    public List<Os> allowedDeviceTypes;
+    public ushort initialFrameRate;
+}
+
+public class ScreenCapture
+{
+    public bool enabled;
+    public bool captureOnServer;
+    public string captureDirectory;
+}
+
+public class Sensors
+{
+    public bool accelerometer;
+    public bool gyroscope;
+    public bool magnetometer;
+    public bool temperature;
+    public bool humidity;
+    public bool pressure;
+    public bool light;
+}
+
+public class Developer
+{
+    public bool preferCli;
+    public bool allowMockedSensors;
+    public bool allowMockedButtons;
+}
+
+public class HealthCheck
+{
+    public HealthCheckConfig server;
+    public HealthCheckConfig client;
+}
+
+public enum ConnectionStrategy
+{
+    Whitelist,
+    Blacklist,
+    Open
+}
+
+public class RateLimit
+{
+    public bool enabled;
+    public ushort? maxTcpRequestsPerMinute;
+}
+
+public class SharedFile
+{
+    public string name;
+    public string path;
+    public SharedFileType type;
+    public ThemeConstraints themeConstraints;
+}
+
+[JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+public enum SharedFileType
+{
+    Audio,
+    [EnumMember(Value = "HTML-Theme")]
+    HTMLTheme,
+
+    [EnumMember(Value = "XML-Theme")]
+    XMLTheme
+}
+
+public class ThemeConstraints
+{
+    public ushort? minWidth;
+    public ushort? maxWidth;
+}
+
+public class HealthCheckConfig
+{
+    public bool enabled;
+    public ulong? intervalMs;
+    public ulong? timeoutMs;
+}
+```
+</Tab>
+</Tabs>
+
+<Callout type="warning">
+`SuduxuConfig` might change at runtime based on specified fields (e.g. password generation)
+</Callout>
+
+### AddressObject
+The `AddressObject` represents the network addresses used by the runtime for different communication channels.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub struct AddressObject {
+    pub tcp: String,
+    pub udp: String,
+    pub file: Option<String>,
+}
+````
+</Tab>
+<Tab value="Unity">
+```cs
+public class AddressObject
+{
+    public string tcp;
+    public string udp;
+    public string file;
+}
+```
+</Tab>
+</Tabs>
+
+## QrCode
+The `QrCode` object represents the QR code information generated by the runtime for client connection.
+<Tabs items={["Rust"]}>
+<Tab value="Rust">
+```rs
+pub struct QrCode {
+    pub pixels: Vec<u8>,
+    pub width: u32,
+}
+```
+</Tab>
+</Tabs>
+
+## Payload Objects
+
+Payload objects are used to send structured data between the native runtime and the clients.
+
+### Payload
+The `Payload` object represents a generic data structure for sending information between the runtime and clients.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub struct Payload {
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_zero")]
+    pub id: u16,
+    name: String,
+    values: Value,
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public class Payload
+{
+    public ushort id;
+    public string name;
+    public JToken values;
+}
+```
+</Tab>
+</Tabs>
+
+### VibrationStrength
+The VibrationStrength object defines the intensity of a vibration command sent to a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub enum VibrationStrength {
+    Light,
+    Medium,
+    Heavy
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public enum VibrationStrength
+{
+    Light,
+    Medium,
+    Heavy
+}
+
+public enum VibrationType
+{
+    Impact,
+    Notification,
+    Selection,
+    Custom
+}
+```
+</Tab>
+</Tabs>
+
+Based on the operating system (mobile only) this leaves us with the following mappings:
+
+| Strength | Android | iOS |
+| --- | --- | --- |
+| Light | Amplitude: 64 | UIImpactFeedbackStyle.UIImpactFeedbackStyleLight |
+| Medium | Amplitude: 128 | UIImpactFeedbackStyle.UIImpactFeedbackStyleMedium |
+| Heavy | Amplitude: 256 | UIImpactFeedbackStyle.UIImpactFeedbackStyleHeavy |
+
+<Callout type="info">
+Note that the VibrationStrength is only compatible with the VibrationTypes `VibrationType.Custom` and `VibrationType.Impact`.
+</Callout>
+
+### VibrationType
+The VibrationType object defines the pattern of a vibration command sent to a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub enum VibrationType {
+    Impact,
+    Notification,
+    Selection,
+    Custom
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public enum VibrationType
+{
+    Impact,
+    Notification,
+    Selection,
+    Custom
+}
+```
+</Tab>
+</Tabs>
+
+Based on the operating system (mobile only) this leaves us with the following mappings:
+
+| Type | Android | iOS |
+| --- | --- | --- |
+| Impact | `VibrationEffect.createOneShot(durationMs, amplitude)` | UIImpactFeedbackGenerator (Style based on Strength) |
+| Notification | API 29+: `VibrationEffect.EFFECT_HEAVY_CLICK` <br/> <br/> Fallback: `VibrationEffect.createOneShot(80, amplitude)` | `UINotificationFeedbackGenerator` (`UINotificationFeedbackTypeSuccess`) |
+| Selection | API 29+: `VibrationEffect.EFFECT_TICK` <br/> <br/> Fallback: `VibrationEffect.createOneShot(40, amplitude)` | `UISelectionFeedbackGenerator` |
+| Custom | `VibrationEffect.createOneShot(durationMs, amplitude)` | `UIImpactFeedbackGenerator` (Style based on Strength) |
+
+## Logging
+Log messages sent from the runtime to clients include a log level to allow for filtering and categorization.
+
+### LogLevel
+The LogLevel object defines the severity of a log message sent to a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub enum LogLevel {
+    Debug,
+    Info,
+    Warn,
+    Error
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public enum LogLevel
+{
+    Debug,
+    Info,
+    Warn,
+    Error
+}
+```
+</Tab>
+</Tabs>
+
+## Input
+Real-time input data from client devices is structured into specific payloads for consistent handling.
+
+### ButtonInput
+The ButtonInput object represents the state of a button input event from a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub struct ButtonInput {
+    pub mocked: bool,
+    pub r#type: ButtonInputType,
+    pub state: ButtonInputState,
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public class ButtonInput
+{
+    public bool mocked;
+    public ButtonInputType type;
+    public ButtonInputState state;
+}
+```
+</Tab>
+</Tabs>
+
+### ButtonInputType
+The ButtonInputType enum defines the type of button input received from a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub enum ButtonInputType {
+    None,
+    Up,
+    Down,
+    Left,
+    Right,
+    A,
+    One,
+    Two,
+    Screenshot,
+    Plus,
+    Minus,
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public enum ButtonInputType
+{
+    None = 0,
+    Up = 1,
+    Down = 2,
+    Left = 3,
+    Right = 4,
+    A = 5,
+    One = 6,
+    Two = 7,
+    Screenshot = 8,
+    Plus = 9,
+    Minus = 10,
+}
+```
+</Tab>
+</Tabs>
+
+### ButtonInputState
+The ButtonInputState enum defines the state of a button input event received from a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub enum ButtonInputState {
+    None,
+    Down,
+    Pressed,
+    Up,
+    Cancel
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public enum ButtonInputState {
+    None = 0,
+    Down = 1,
+    Pressed = 2,
+    Up = 3,
+    Cancel = 4,
+}
+```
+</Tab>
+</Tabs>
+
+### SensorDataRaw
+The SensorDataRaw object represents raw sensor data received from a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+#[derive(Copy, Clone, Serialize, Deserialize, Debug)]
+pub struct SensorDataRaw {
+    pub id: u16,
+
+    pub mocked: u8, // 0 for false, 1 for true
+
+    pub ax: f32,
+    pub ay: f32,
+    pub az: f32,
+
+    pub gx: f32,
+    pub gy: f32,
+    pub gz: f32,
+    pub gw: f32,
+
+    pub mx: f32,
+    pub my: f32,
+    pub mz: f32,
+
+    pub temperature: f32,
+    pub humidity: f32,
+    pub pressure: f32,
+    pub light: f32,
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public struct SensorDataRaw
+{
+    public ushort id;
+
+    public byte mocked;
+
+    public float ax;
+    public float ay;
+    public float az;
+
+    public float gx;
+    public float gy;
+    public float gz;
+    public float gw;
+
+    public float mx;
+    public float my;
+    public float mz;
+
+    public float temperature;
+    public float humidity;
+    public float pressure;
+    public float light;
+}
+```
+</Tab>
+</Tabs>
+
+<Callout type="info">
+The `mocked` field is represented as a byte (0 or 1) for compatibility. If no data is present, the fields will be set to `0`.
+</Callout>
+
+### JoystickData
+The JoystickData object represents joystick input data received from a client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub struct JoystickData {
+    pub x: f32,
+    pub y: f32,
+    pub angle_deg: f32,
+    pub magnitude: f32
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public class JoystickData
+{
+    public float x;
+    public float y;
+    public float angleDeg;
+    public float magnitude;
+}
+```
+</Tab>
+</Tabs>
+
+## Device State
+Device state data models represent the current status and telemetry of connected client devices.
+
+### Battery
+The Battery object represents the battery status of a connected client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub struct Battery {
+    pub level: u8,
+    pub charging_status: ChargingStatus
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public class Battery
+{
+    public sbyte level;
+
+    [JsonProperty("charging_status")]
+    public ChargingStatus chargingStatus;
+}
+```
+</Tab>
+</Tabs>
+
+### ChargingStatus
+The ChargingStatus enum defines the charging state of a connected client device's battery.
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub enum ChargingStatus {
+    Charging,
+    Discharging,
+    Full,
+    NotCharging,
+    #[default]
+    Unknown,
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public enum ChargingStatus
+{
+    Charging,
+    Discharging,
+    Full,
+    NotCharging,
+    Unknown,
+}
+```
+</Tab>
+</Tabs>
+
+### Network
+The Network object represents the network status of a connected client device.
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub struct Network {
+    pub network_type: NetworkType
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public class Network
+{
+    public NetworkType networkType;
+}
+```
+</Tab>
+</Tabs>
+
+### NetworkType
+The NetworkType enum defines the type of network connectivity of a connected client device.
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+pub enum NetworkType {
+    Wifi,
+    Mobile,
+    Ethernet,
+    Bluetooth,
+    VPN,
+    #[default]
+    Unknown
+}
+```
+</Tab>
+<Tab value="Unity">
+```cs
+public enum NetworkType
+{
+    Wifi,
+    Mobile,
+    Ethernet,
+    Bluetooth,
+    VPN,
+    Unknown
+}
+```
+</Tab>
+</Tabs>

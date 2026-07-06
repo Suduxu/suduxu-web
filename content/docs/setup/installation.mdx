@@ -1,0 +1,73 @@
+---
+title: Installation
+icon: Download
+description: Install the Suduxu runtime and optional development tools.
+---
+
+# Installation
+
+Suduxu can be installed in two ways depending on your workflow:
+
+## Native Runtime (ABI)
+
+The Suduxu runtime contains the native libraries required by all SDKs and integrations.
+
+You can download the runtime manually from:
+
+- [Suduxu ABI GitHub Releases](https://github.com/Suduxu/Suduxu-Release)
+
+The repository contains:
+
+- `suduxu.dll` (Windows)
+- `suduxu.so` (Linux)
+- `suduxu.dylib` (macOS)
+
+Follow the installation instructions in the repository README.
+
+## Suduxu CLI
+
+The Suduxu CLI provides tools for:
+
+- Managing servers
+- Viewing logs
+- Editing themes
+- Managing configuration
+- Downloading and upgrading ABI versions
+
+The CLI can be downloaded from:
+
+- [Suduxu CLI GitHub Releases](https://github.com/Suduxu/Suduxu-Release)
+
+Follow the installation instructions in the repository README.
+
+## Managing Runtime Versions with the CLI
+
+After installing the CLI, runtime versions can be managed directly from the terminal.
+
+### List available versions
+
+```bash
+suduxu utils list
+```
+
+### Download the latest runtime
+
+```bash
+suduxu utils import
+```
+
+### Download a specific version
+
+```bash
+suduxu utils import 1.0.0
+```
+
+### Upgrade an existing installation
+
+```bash
+suduxu utils upgrade
+```
+
+## Next Step
+
+Continue with the Native Setup guide to configure Suduxu inside your project.

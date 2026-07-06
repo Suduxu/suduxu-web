@@ -1,0 +1,353 @@
+---
+
+title: Troubleshooting
+icon: TriangleAlert
+description: Common issues and solutions for Suduxu.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+
+# Troubleshooting
+
+This page covers the most common issues encountered when running Suduxu.
+
+<Callout type="info">
+This list is not exhaustive and may be extended in future releases as new issues and solutions are identified.
+</Callout>
+
+## Quick Diagnosis
+
+| Symptom                   | Likely Cause                                   | First Check                              |
+| ------------------------- | ---------------------------------------------- | ---------------------------------------- |
+| Device cannot connect     | Firewall, network configuration, wrong address | Same network, correct IP, server running |
+| Connection timeout        | TCP/UDP traffic blocked                        | Firewall rules and open ports            |
+| Device discovery fails    | Network isolation or router settings           | Manual IP connection                     |
+| Theme does not appear     | Theme not loaded                               | File sharing configuration               |
+| Inputs are not received   | Wrong event handling or theme setup            | Event subscriptions                      |
+| Screenshots are not saved | Screen capture disabled                        | `screen_capture` configuration           |
+| Sensor values are missing | Sensor disabled in config                      | `sensors` section                        |
+
+---
+
+# Connection Issues
+
+Connection problems are the most common source of Suduxu setup failures.
+
+## Device Cannot Connect
+
+### Symptoms
+
+* Device shows connection errors
+* Connection attempt never completes
+* Device remains disconnected
+* Server appears to be running normally
+
+### Possible Causes
+
+* Device and server are not on the same network
+* Firewall blocks Suduxu ports
+* Incorrect server address
+* VPN or proxy interference
+* Connection strategy restrictions
+
+### Resolution
+
+<Steps>
+  <Step>
+    ## Verify the server is running
+
+
+Start Suduxu and ensure it is listening for connections.
+
+```bash
+suduxu server start
+```
+
+  </Step>
+
+  <Step>
+    ## Verify both devices are on the same network
+
+Ensure the host machine and mobile device are connected to the same LAN.
+
+Disable VPNs temporarily while testing.
+
+  </Step>
+
+  <Step>
+    ## Verify firewall rules
+
+Allow the configured TCP, UDP and file-sharing ports through the operating system firewall.
+
+  </Step>
+
+  <Step>
+    ## Verify server address
+
+Ensure the correct IP address is used when connecting manually.
+
+
+  </Step>
+
+  <Step>
+    ## Check connection restrictions
+
+
+If using `Whitelist` or `Blacklist`, verify that the device is allowed to connect.
+
+  </Step>
+</Steps>
+
+---
+
+## Discovery Does Not Work
+
+### Symptoms
+
+* Suduxu does not appear in the device list
+* Automatic discovery never finds the server
+
+### Possible Causes
+
+* Router isolates wireless clients
+* Discovery packets are blocked
+* Device is on a guest network
+
+### Resolution
+
+1. Verify both devices are on the same subnet.
+2. Disable guest-network isolation.
+3. Try connecting directly via IP address.
+4. Verify firewall settings.
+
+---
+
+## Connection Randomly Disconnects
+
+### Possible Causes
+
+* Unstable Wi-Fi connection
+* Aggressive firewall policies
+* Health check timeouts configured too aggressively
+
+### Resolution
+
+```json
+{
+  "health_check": {
+    "client": {
+      "enabled": true,
+      "interval_ms": 1000,
+      "timeout_ms": 5000
+    }
+  }
+}
+```
+
+Increase timeout values when operating on unstable networks.
+
+---
+
+# Theme Issues
+
+## Theme Does Not Appear
+
+### Possible Causes
+
+* Theme not registered in `file_sharing.files`
+* Theme not included in `initially_loaded`
+* Invalid file path
+* Unsupported theme format
+
+### Resolution
+
+Verify the theme configuration:
+
+```json
+{
+  "file_sharing": {
+    "enabled": true,
+    "initially_loaded": [
+      "Default Theme"
+    ]
+  }
+}
+```
+
+Ensure the referenced file exists and the path is correct.
+
+---
+
+## Theme Layout Appears Broken
+
+### HTML Themes
+
+* Verify component scripts are loaded
+* Verify component stylesheets are loaded
+* Check browser console for JavaScript errors
+
+### XML Themes
+
+* Verify component names are valid
+* Verify component properties use supported values
+* Verify Lua syntax is valid
+
+---
+
+# Input Issues
+
+## Button Inputs Are Not Received
+
+### Possible Causes
+
+* Event handlers not registered
+* Incorrect input mapping
+* Theme component misconfiguration
+
+### Resolution
+
+Verify that the application subscribes to the correct events and that the selected theme emits the expected input types.
+
+See:
+
+* Clients API
+* Events System
+* Data Models
+
+---
+
+## Sensor Data Is Missing
+
+### Possible Causes
+
+* Sensor disabled in configuration
+* Device does not provide the sensor
+* Sensor streaming disabled
+
+### Resolution
+
+Verify sensor configuration:
+
+```json
+{
+  "sensors": {
+    "accelerometer": true,
+    "gyroscope": true,
+    "magnetometer": true
+  }
+}
+```
+
+Also verify:
+
+```json
+{
+  "devices": {
+    "initially_send_sensor_data": true
+  }
+}
+```
+
+---
+
+# File Sharing Issues
+
+## Files Do Not Appear On Devices
+
+### Possible Causes
+
+* File sharing disabled
+* File path invalid
+* File server port blocked
+
+### Resolution
+
+Verify:
+
+```json
+{
+  "file_sharing": {
+    "enabled": true
+  }
+}
+```
+
+Ensure all referenced files exist and firewall rules allow file transfer traffic.
+
+---
+
+# Screen Capture Issues
+
+## Screenshots Are Not Saved
+
+### Possible Causes
+
+* Screen capture disabled
+* Invalid capture directory
+* Missing filesystem permissions
+
+### Resolution
+
+Verify:
+
+```json
+{
+  "screen_capture": {
+    "enabled": true,
+    "capture_on_server": true,
+    "capture_directory": "captures"
+  }
+}
+```
+
+Ensure the configured directory exists and is writable.
+
+---
+
+# Logging And Diagnostics
+
+When troubleshooting difficult issues, increase the logging level:
+
+```json
+{
+  "logging": {
+    "debug_level": "Debug",
+    "log_to_console": true
+  }
+}
+```
+
+You can also inspect logs using:
+
+```bash
+suduxu logs list
+```
+
+or
+
+```bash
+suduxu logs watch
+```
+
+depending on your platform and installation.
+
+---
+
+# Still Having Problems?
+
+If none of the solutions above resolve the issue:
+
+1. Enable debug logging.
+2. Verify your `suduxu.json` configuration.
+3. Test with a minimal setup.
+4. Update to the latest Suduxu release.
+5. Review the CLI and API documentation for the affected subsystem.
+
+If the problem persists, please go to [Suduxu Community](https://github.com/Suduxu/Suduxu-Hub/discussions) and provide:
+- A detailed description of the issue
+- Steps to reproduce
+- Relevant log output
+- Your `suduxu.json` configuration (redact sensitive information)
+- Your environment details (OS, network setup, etc.)
+The community and developers will be happy to assist you in diagnosing and resolving the issue.

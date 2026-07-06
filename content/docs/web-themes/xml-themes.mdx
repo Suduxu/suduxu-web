@@ -1,0 +1,353 @@
+---
+title: XML-Themes
+icon: Braces
+description: Build native Suduxu interfaces using XML components that map directly to Jetpack Compose.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# XML Themes
+
+XML themes define native Suduxu user interfaces using a declarative component system.
+
+Each XML node is parsed into an internal UI tree and rendered directly into Jetpack Compose components on the device.
+
+```text
+XML Theme
+  → Parsed into UINode tree
+  → Component mapping layer
+  → Jetpack Compose rendering
+```
+
+This makes XML themes lightweight, fast, and tightly integrated with Android rendering.
+
+---
+
+## Core Concept
+
+Every XML element is treated as a **UI component declaration**.
+
+Each component:
+
+- has a fixed name (`Button`, `Row`, `Column`, ...)
+- accepts a set of **typed properties**
+- can contain **child components**
+- maps 1:1 (or near 1:1) to a Compose implementation
+
+---
+
+## Component System Overview
+
+### Common Structure
+
+All components follow this structure:
+
+- **Props (attributes)** → configuration values
+- **Children** → nested UI nodes
+- **Runtime rendering** → Jetpack Compose function
+
+```text
+<UINode>
+  name: "Button"
+  props: { label, onClick, ... }
+  children: [...]
+```
+
+---
+
+## Components Reference
+
+## Layout Components
+
+<Tabs items={["Column", "Row"]}>
+  <Tab value="Column">
+
+### Column
+
+A vertical layout container based on `Column`.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `hAlign` | string | center | Horizontal alignment (`start`, `end`, `center`) |
+| `vArrange` | string | top | Vertical arrangement (`top`, `bottom`, `center`, `spaceBetween`, `spaceAround`, `spaceEvenly`) |
+| `spacing` | number | null | Spacing between children |
+| `background` | string | null | Background color |
+| `width` | number | null | Fixed width |
+| `height` | number | null | Fixed height |
+| `padding` | number/object | null | Padding configuration |
+| `fillMaxSize` | boolean | false | Fill entire available space |
+
+#### Example
+
+```xml
+<Column hAlign="center" spacing="8">
+    <Text text="Hello" />
+    <Text text="World" />
+</Column>
+```
+
+  </Tab>
+
+  <Tab value="Row">
+
+### Row
+
+A horizontal layout container based on `Row`.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `hArrangement` | string | start | Horizontal arrangement |
+| `vAlign` | string | center | Vertical alignment |
+| `spacing` | number | null | Spacing between children |
+| `padding` | number/object | null | Padding configuration |
+| `fillMaxSize` | boolean | false | Fill available space |
+
+#### Example
+
+```xml
+<Row hArrangement="spaceBetween" vAlign="center">
+    <Text text="Left" />
+    <Text text="Right" />
+</Row>
+```
+
+  </Tab>
+</Tabs>
+
+---
+
+## UI Components
+
+<Tabs items={["Button", "Text"]}>
+  <Tab value="Button">
+
+### Button
+
+A clickable UI element that triggers a callback.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `label` | string | required (if no children) | Button text |
+| `onClick` | function | null | Click callback |
+| `enabled` | boolean | true | Whether button is active |
+| `backgroundColor` | string | default | Button background |
+| `textColor` | string | white | Label color |
+| `fontSize` | number | 16 | Text size |
+| `cornerRadius` | number | 8 | Corner rounding |
+| `padding` | number/object | null | Inner padding |
+
+#### Behavior Rules
+
+- If **children exist**, they override `label`
+- If `onClick` is missing, button is inert
+- Colors accept hex or parsed color strings
+
+#### Example
+
+```xml
+<Button label="Press Me" onClick="handlePress" />
+```
+
+  </Tab>
+
+  <Tab value="Text">
+
+### Text
+
+Displays a text label.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `text` | string | required | Displayed text |
+| `color` | string | black | Text color |
+| `fontSize` | number | 16 | Font size |
+| `fontWeight` | string | normal | `light`, `medium`, `bold` |
+| `fontStyle` | string | normal | `italic` |
+| `textAlign` | string | start | `start`, `center`, `end`, `justify` |
+| `maxLines` | number | unlimited | Max line count |
+| `softWrap` | boolean | true | Wrapping behavior |
+
+#### Example
+
+```xml
+<Text text="Suduxu UI" fontWeight="bold" />
+```
+
+  </Tab>
+</Tabs>
+
+---
+
+## Input Components
+
+<Tabs items={["SuduxuButton", "SuduxuDPad", "SuduxuJoystick"]}>
+  <Tab value="SuduxuButton">
+
+### SuduxuButton
+
+A hardware-mapped controller button.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `label` | string | "X" | Button label |
+| `buttonInput` | enum | A | Input binding |
+| `size` | number | 64 | Button size |
+| `onInput` | function | null | Input callback |
+
+#### Behavior
+
+- Automatically registers with `KeyboardService`
+- Emits `ButtonInputData`
+- Supports hardware mapping
+
+#### Example
+
+```xml
+<SuduxuButton label="A" buttonInput="A" />
+```
+
+  </Tab>
+
+  <Tab value="SuduxuDPad">
+
+### SuduxuDPad
+
+Directional input component.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `size` | number | 200 | DPad size |
+| `dPadOffsetX` | number | 0 | Horizontal offset |
+| `onInput` | function | null | Direction callback |
+
+#### Behavior
+
+- Emits `ButtonInputData`
+- Supports directional state transitions
+- Internally uses `DPadState`
+
+#### Example
+
+```xml
+<SuduxuDPad size="200" />
+```
+
+  </Tab>
+
+  <Tab value="SuduxuJoystick">
+
+### SuduxuJoystick
+
+Analog joystick input component.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `size` | number | 200 | Joystick size |
+| `knobRatio` | float | 0.5 | Knob scaling |
+| `baseColor` | string | default | Background color |
+| `knobColor` | string | default | Knob color |
+| `onInput` | function | null | Movement callback |
+
+#### Behavior
+
+- Emits `JoyStickData`
+- Provides normalized X/Y axis
+- Reports magnitude + angle
+
+#### Example
+
+```xml
+<SuduxuJoystick size="200" knobRatio="0.5" />
+```
+
+  </Tab>
+</Tabs>
+
+---
+
+## Spacer Component
+
+<Tabs items={["Spacer"]}>
+  <Tab value="Spacer">
+
+### Spacer
+
+Adds empty space in layouts.
+
+#### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `width` | number | null | Horizontal space |
+| `height` | number | null | Vertical space |
+
+#### Example
+
+```xml
+<Spacer height="16" />
+```
+
+  </Tab>
+</Tabs>
+
+---
+
+## Layout Utilities
+
+These modifiers affect all components:
+
+### Padding
+
+```xml
+padding="8"
+```
+
+Or directional:
+
+```xml
+padding="{ start: 8, top: 4, end: 8, bottom: 4 }"
+```
+
+### Fill behavior
+
+```xml
+fillMaxSize="true"
+fillMaxWidth="true"
+fillMaxHeight="true"
+```
+
+---
+
+## Execution Model
+
+```text
+XML → UINode tree → Renderer → Compose runtime
+```
+
+Key points:
+
+- UI is **tree-based**
+- Rendering is **recursive**
+- Props are **loosely typed maps**
+- Callbacks are resolved at runtime
+
+---
+
+<Callout type="warning">
+XML themes are not validated at compile time. Invalid properties are ignored or may fail at runtime depending on parser strictness.
+</Callout>

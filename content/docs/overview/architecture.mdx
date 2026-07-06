@@ -1,0 +1,148 @@
+---
+title: Architecture
+icon: Blocks
+description: Understand how Suduxu is structured across server, clients, SDKs, and communication layers.
+---
+
+# Architecture
+
+Suduxu is built around a networked client-server model designed for low-latency input exchange and real-time device interaction.
+
+At its core, it connects applications (servers) with smartphones (clients) over a local network.
+
+## High-Level Overview
+
+Suduxu consists of four main layers:
+
+1. **Host Application (Server)**
+2. **Suduxu Core Runtime (Native Layer)**
+3. **Client Devices (Smartphones)**
+4. **Interface Layer (Web Themes / SDKs)**
+
+Each layer has a distinct responsibility in the system.
+
+---
+
+## Host Application (Server)
+
+The host application is your game, tool, or desktop software that integrates Suduxu.
+
+It is responsible for:
+
+- Starting and stopping the Suduxu runtime
+- Managing connected devices
+- Receiving input events (buttons, joystick, sensors)
+- Sending feedback (vibration, sound, logs)
+- Using the Rust or Unity SDK APIs
+
+The host does not communicate directly over the network. It interacts with the native runtime.
+
+---
+
+## Suduxu Core Runtime
+
+The runtime is a native library (`suduxu.dll`, `.so`, `.dylib`) that handles:
+
+- TCP/UDP networking
+- Device discovery and pairing
+- Event dispatching
+- Input processing
+- Client state tracking
+- Theme execution environment
+
+It exposes a C-compatible FFI layer used by both Rust and Unity bindings.
+
+---
+
+## Client Devices
+
+Clients are smartphones connected to the Suduxu server.
+
+Each client can:
+
+- Send button and joystick input
+- Stream sensor data (if enabled)
+- Receive vibration and audio commands
+- Render custom UI themes (HTML/XML)
+- Send screenshots (if enabled)
+- Report battery and network state
+
+Clients are identified by a unique `id` assigned by the server.
+
+---
+
+## Interface Layer (Themes)
+
+Suduxu supports fully custom user interfaces rendered on the client device.
+
+There are two supported theme systems:
+
+- HTML-based themes (web view rendering)
+- XML-based themes (structured UI components)
+
+These themes define how the phone behaves as a controller or companion screen.
+
+---
+
+## Communication Model
+
+Suduxu uses a hybrid communication approach:
+
+- **TCP** for connection management and reliable control messages
+- **UDP** for real-time input events (low latency)
+- Native callbacks for internal runtime events
+
+Input and state updates are pushed through an event system inside the SDKs.
+
+---
+
+## Event System
+
+The runtime emits events such as:
+
+- Client connected/disconnected
+- Button input received
+- Joystick movement
+- Device state updates
+- Errors and health status changes
+
+These are exposed in:
+
+- Rust via `EventBus`
+- Unity via C# events
+- Internal FFI callbacks
+
+---
+
+## Data Flow
+
+A simplified flow looks like this:
+
+1. Client performs input (e.g. button press)
+2. Input is sent via UDP to runtime
+3. Runtime processes and normalizes data
+4. Event is emitted through event system
+5. Host application receives event via SDK
+6. Host responds (optional) with feedback (vibration, logs, etc.)
+
+---
+
+## Why this architecture exists
+
+This design prioritizes:
+
+- Low latency input handling
+- Cross-language support (Rust + Unity)
+- Extensibility for new platforms
+- Separation between UI (client) and logic (host)
+- Real-time bidirectional communication
+
+---
+
+## Next Steps
+
+To understand how to use this architecture in practice, continue with:
+
+- **Setup → Installation**
+- **API → Lifecycle**
+- **Web Themes → Overview**

@@ -1,0 +1,188 @@
+---
+title: Server Commands
+icon: Server
+description: Manage the Suduxu server lifecycle, connected devices, and connection information.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+The `server` command group is responsible for starting and stopping Suduxu, monitoring connected devices, and generating connection information for clients.
+
+## Start the Server
+
+Start a Suduxu server instance.
+
+<Tabs items={["Foreground", "Detached"]}>
+  <Tab value="Foreground">
+
+```bash
+suduxu server start
+```
+
+Runs the server in the current terminal.
+
+  </Tab>
+
+  <Tab value="Detached">
+
+```bash
+suduxu server start --detached
+```
+
+Runs the server in the background.
+
+  </Tab>
+</Tabs>
+
+<Callout type="info">
+The server must be running before devices can connect and before themes can be served. Although not multiple instances of the server can run in the CLI.
+</Callout>
+
+---
+
+## Check Server Status
+
+Display the currently active network addresses.
+
+<Tabs items={["Normal Output", "JSON Output"]}>
+  <Tab value="Normal Output">
+
+```bash
+suduxu server status
+```
+
+Example:
+
+```text
+Server Status:
+TCP Address: 127.0.0.1:9000
+UDP Address: 127.0.0.1:9001
+File Address: Not running
+Control Address: 127.0.0.1:50676
+```
+
+  </Tab>
+
+  <Tab value="JSON Output">
+
+```bash
+suduxu server status --json
+```
+
+Example:
+
+```json
+{
+  "tcp": "127.0.0.1:9000",
+  "udp": "127.0.0.1:9001",
+  "file": null,
+  "control": "127.0.0.1:50676"
+}
+```
+
+  </Tab>
+</Tabs>
+
+---
+
+## Stop the Server
+
+```bash
+suduxu server stop
+```
+
+Stops the currently running Suduxu server.
+
+---
+
+## List Connected Clients
+
+<Tabs items={["All Clients", "Single Client", "JSON"]}>
+  <Tab value="All Clients">
+
+```bash
+suduxu server clients --all
+```
+
+Lists all connected devices.
+
+  </Tab>
+
+  <Tab value="Single Client">
+
+```bash
+suduxu server clients --id 1
+```
+
+Displays information for a specific client.
+
+  </Tab>
+
+  <Tab value="JSON">
+
+```bash
+suduxu server clients --all --json
+```
+
+Returns client information as JSON.
+
+  </Tab>
+</Tabs>
+
+---
+
+## Disconnect Clients
+
+<Tabs items={["Single Client", "All Clients"]}>
+  <Tab value="Single Client">
+
+```bash
+suduxu server disconnect --id 1
+```
+
+Disconnect a specific client.
+
+  </Tab>
+
+  <Tab value="All Clients">
+
+```bash
+suduxu server disconnect --all
+```
+
+Disconnect all connected clients.
+
+  </Tab>
+</Tabs>
+
+---
+
+## Generate a Connection QR Code
+
+Generate a QR code that devices can scan to connect to the current server.
+
+```bash
+suduxu server code connection.png
+```
+
+<Callout type="tip">
+This command is useful for local development and testing because devices can connect instantly by scanning the generated image.
+</Callout>
+
+---
+
+## Command Summary
+
+| Command | Description |
+|----------|-------------|
+| `suduxu server start` | Start the server |
+| `suduxu server start --detached` | Start the server in the background |
+| `suduxu server status` | Show active server addresses |
+| `suduxu server status --json` | Show active server addresses as JSON |
+| `suduxu server stop` | Stop the server |
+| `suduxu server clients --all` | List all connected clients |
+| `suduxu server clients --id <ID>` | Show a specific client |
+| `suduxu server disconnect --id <ID>` | Disconnect a client |
+| `suduxu server disconnect --all` | Disconnect all clients |
+| `suduxu server code <FILE>` | Generate a connection QR code |

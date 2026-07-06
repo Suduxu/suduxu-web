@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/shadcn.css';
+@import 'fumadocs-ui/css/preset.css';
+@source '../node_modules/fumadocs-ui/dist/**/*.js';
+
+/* --- Custom design tokens -> generate utilities like bg-brand, text-brand-text --- */
+@theme {
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-sans:    var(--font-ibm-plex-sans), sans-serif;
+  --font-mono:    var(--font-jetbrains-mono), monospace;
+
+  --color-brand:       #3d5bff;
+  --color-brand-hover: #5571ff;
+  --color-brand-text:  #c7d2ff;
+}
+
+/* --- LIGHT MODE (default) : white / light-gray, same blue accent --- */
+:root {
+  --color-fd-background:          #ffffff;
+  --color-fd-foreground:          #14141b;
+  --color-fd-muted:               #f4f4f6;
+  --color-fd-muted-foreground:    #5c5c68;
+  --color-fd-popover:             #ffffff;
+  --color-fd-popover-foreground:  #14141b;
+  --color-fd-card:                #fafafb;
+  --color-fd-card-foreground:     #14141b;
+  --color-fd-border:              #e6e6ea;
+  --color-fd-primary:             #3d5bff;
+  --color-fd-primary-foreground:  #ffffff;
+  --color-fd-secondary:           #f4f4f6;
+  --color-fd-secondary-foreground:#14141b;
+  --color-fd-accent:              #f0f0f3;
+  --color-fd-accent-foreground:   #14141b;
+  --color-fd-ring:                #3d5bff;
+
+  /* on-accent text: light mode uses white on the blue button */
+  --brand-fg: #ffffff;
+}
+
+/* --- DARK MODE : your original Suduxu palette --- */
+.dark {
+  --color-fd-background:          #0d0d11;
+  --color-fd-foreground:          #f1f1f4;
+  --color-fd-muted:               #14141b;
+  --color-fd-muted-foreground:    #9a9aa6;
+  --color-fd-popover:             #14141b;
+  --color-fd-popover-foreground:  #f1f1f4;
+  --color-fd-card:                #14141b;
+  --color-fd-card-foreground:     #f1f1f4;
+  --color-fd-border:              #23232b;
+  --color-fd-primary:             #3d5bff;
+  --color-fd-primary-foreground:  #0a0a0d;
+  --color-fd-secondary:           #191920;
+  --color-fd-secondary-foreground:#f1f1f4;
+  --color-fd-accent:              #191920;
+  --color-fd-accent-foreground:   #f1f1f4;
+  --color-fd-ring:                #3d5bff;
+
+  /* on-accent text: dark mode uses near-black on the blue button */
+  --brand-fg: #0a0a0d;
+}
+
+html { scrollbar-gutter: stable; }
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}

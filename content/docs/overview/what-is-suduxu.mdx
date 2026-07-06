@@ -1,0 +1,78 @@
+---
+title: What is Suduxu?
+icon: CircleQuestionMark
+description: It is a development tool that allows software creators to turn any smartphone into a responsive, custom game controller or companion screen.
+---
+
+# What is Suduxu?
+
+Suduxu is a platform that allows applications to use smartphones as custom controllers, companion screens, telemetry displays, and remote interfaces.
+
+Instead of requiring dedicated hardware, Suduxu enables devices connected to the same network to communicate with your application in real time.
+
+## Why Suduxu?
+
+Modern smartphones already contain everything needed for rich user interaction:
+
+- Multi-touch displays
+- Motion sensors
+- Network connectivity
+- Audio output
+- Haptic feedback
+- High-resolution screens
+
+Suduxu exposes these capabilities through a simple API, allowing applications to receive input and send feedback without requiring users to install additional hardware.
+
+## What can you build?
+
+With Suduxu, a phone can become:
+
+- A game controller
+- A joystick or D-Pad
+- A racing dashboard
+- A flight simulator instrument panel
+- A second-screen experience
+- A remote control
+- A monitoring interface
+- A custom business or industrial control panel
+
+## Core Features
+
+### Real-Time Input
+
+Receive button presses, joystick movement, and sensor data from connected devices.
+
+### Device Feedback
+
+Send vibration, audio playback requests, and log messages directly to connected clients.
+
+### Custom Interfaces
+
+Create fully custom controller layouts using HTML or XML themes rendered directly inside the mobile application.
+
+### Native SDKs
+
+Integrate Suduxu into applications using:
+
+- Rust
+- Unity
+
+### Command Line Tools
+
+Manage servers, configurations, themes, logs, and native libraries through the Suduxu CLI.
+
+## How it works
+
+At a high level, Suduxu consists of three parts:
+
+1. A host application running the Suduxu server.
+2. One or more smartphones connected to the server.
+3. A communication layer that exchanges input, device state, and feedback between them.
+
+The server receives input from connected devices and exposes it through the SDK APIs, while applications can send commands and feedback back to the devices.
+
+## Next Steps
+
+If you want to understand the internal architecture of Suduxu, continue with the **Architecture** section.
+
+If you want to get a server running immediately, head to **Quick Start**.

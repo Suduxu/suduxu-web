@@ -1,0 +1,10 @@
+{
+    "title": "Web-Themes",
+    "icon": "Palette",
+    "pages": [
+        "overview",
+        "html-themes",
+        "xml-themes",
+        "styling-and-runtime"
+    ]
+}

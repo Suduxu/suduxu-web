@@ -1,0 +1,107 @@
+---
+title: Styling & Runtime
+icon: Paintbrush
+description: How theme definitions are translated into native rendering behavior and how layout, spacing, and styling are resolved at runtime.
+---
+
+## Overview
+
+Suduxu themes are not rendered directly. They are first parsed into an intermediate node structure and then resolved by a runtime renderer depending on the theme type.
+
+- XML themes → native Compose components
+- HTML themes → WebView-based rendering with injected components
+- Shared concept → `UINode` + property map
+
+---
+
+## Runtime Model
+
+Every UI element is represented as a node:
+
+- `type`: component identifier (e.g. Button, Column)
+- `props`: key-value map of configuration
+- `children`: nested UI nodes
+
+Rendering is recursive: each node resolves itself and then delegates rendering of its children.
+
+---
+
+## Property Resolution
+
+Props are resolved in a fixed order:
+
+1. Explicit component props (e.g. `backgroundColor`, `size`)
+2. Layout modifiers (padding, fill, spacing)
+3. Defaults defined in component implementation
+
+Unrecognized props are ignored unless explicitly handled by a component.
+
+---
+
+## Layout System
+
+Layout behavior is driven by a shared modifier pipeline:
+
+### Padding
+
+Padding supports two formats:
+
+- uniform value
+- directional map
+
+- `start`, `end`, `top`, `bottom` (or `left` / `right` aliases)
+
+### Fill Behavior
+
+Nodes can opt into layout expansion:
+
+- `fillMaxWidth`
+- `fillMaxHeight`
+- `fillMaxSize`
+
+These are resolved before component-specific modifiers.
+
+### Example behavior
+
+A `Column` with `fillMaxSize = true` will always override explicit width/height constraints.
+
+---
+
+## Runtime Rendering Flow
+
+Each node goes through:
+
+1. Parse node from theme definition
+2. Convert props into typed values
+3. Apply layout modifiers (`padding`, `fill`, sizing)
+4. Render component (Compose or WebView equivalent)
+5. Recursively render children
+
+This ensures consistent behavior across XML and HTML themes.
+
+---
+
+## Shared vs Platform-Specific Behavior
+
+### Shared
+
+- Node structure (`UINode`)
+- Prop parsing rules
+- Layout system (padding, fill, spacing semantics)
+
+### Platform-specific
+
+- XML → Jetpack Compose rendering
+- HTML → WebView DOM injection + JS runtime components
+
+---
+
+## Important Constraint
+
+Styling is intentionally **not CSS-based in XML themes**. Instead, styling is expressed through:
+
+- explicit props
+- layout modifiers
+- component-level parameters
+
+This keeps XML themes deterministic and platform-independent.

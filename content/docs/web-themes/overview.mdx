@@ -1,0 +1,101 @@
+---
+title: Overview
+icon: Eye
+description: Suduxu themes define the visual and interaction layer of a connected device using XML or HTML-based layouts.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+Suduxu supports a theme system that defines how a connected device UI is rendered and how user interactions are structured.
+
+Themes are not purely visual templates. They are translated into runtime-native UI representations depending on their format.
+
+---
+
+## Theme types
+
+Suduxu supports two theme formats:
+
+### XML Themes
+
+- Structured declarative layout format
+- Converted into native UI components
+- Used for performance-optimized rendering
+
+At runtime, XML themes are transformed into **native Jetpack Compose components**.
+
+### HTML Themes
+
+- Web-based layout format
+- Supports full HTML, CSS, and JavaScript
+- Loaded and rendered inside a WebView
+
+HTML themes are used when flexible or web-like UI behavior is required.
+
+---
+
+## Runtime behavior
+
+<Tabs items={["XML Themes", "HTML Themes"]}>
+
+<Tab value="XML Themes">
+
+XML themes are parsed and compiled into native UI structures.
+
+Flow:
+
+- XML file is parsed
+- Layout is validated
+- Components are mapped to native widgets
+- Jetpack Compose tree is generated
+
+Result:
+
+- Native performance
+- Tight integration with input system
+- Low latency rendering
+
+</Tab>
+
+<Tab value="HTML Themes">
+
+HTML themes are executed inside an embedded WebView.
+
+Flow:
+
+- HTML file is loaded
+- Assets and scripts are resolved
+- WebView renders layout
+- JavaScript can interact with Suduxu bridge
+
+Result:
+
+- Full web rendering capabilities
+- Flexible UI design
+- Slightly higher overhead compared to XML
+
+</Tab>
+
+</Tabs>
+
+---
+
+## Selection criteria
+
+Choose theme type based on requirements:
+
+- Use XML when performance and native integration are required
+- Use HTML when UI flexibility and web tooling are preferred
+
+---
+
+## Lifecycle integration
+
+Themes are loaded after runtime initialization and are bound to a connected client session. Changes can be pushed dynamically during runtime depending on server configuration.
+
+---
+
+## Key constraint
+
+Themes are not static assets. They are runtime-driven UI definitions tied to active client sessions.

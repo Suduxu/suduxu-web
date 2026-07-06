@@ -1,0 +1,210 @@
+---
+title: Logs
+icon: ScrollText
+description: View, filter, follow, and manage Suduxu logs.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+The `logs` command group provides access to Suduxu's logging system. Logs can be viewed in real time, filtered by level, searched, or cleared entirely.
+
+## Show Logs
+
+Display log entries from the local Suduxu log store.
+
+```bash
+suduxu logs show
+```
+
+By default, Suduxu displays the most recent 25 log entries.
+
+---
+
+## Follow Logs in Real Time
+
+Monitor logs as they are written.
+
+```bash
+suduxu logs show --follow
+```
+
+This behaves similarly to `tail -f` and continuously streams new log entries to the terminal.
+
+<Callout type="tip">
+This is especially useful while developing themes, testing client connections, or debugging application integrations.
+</Callout>
+
+---
+
+## Limit Output
+
+<Tabs items={["Tail", "Head"]}>
+  <Tab value="Tail">
+
+Show the most recent entries.
+
+```bash
+suduxu logs show --tail 50
+```
+
+Displays the latest 50 log entries.
+
+  </Tab>
+
+  <Tab value="Head">
+
+Show the oldest entries.
+
+```bash
+suduxu logs show --head 50
+```
+
+Displays the first 50 matching log entries.
+
+  </Tab>
+</Tabs>
+
+---
+
+## Filter by Log Level
+
+Only display entries matching a specific severity level.
+
+```bash
+suduxu logs show --level error
+```
+
+Examples:
+
+```bash
+suduxu logs show --level debug
+suduxu logs show --level info
+suduxu logs show --level warning
+suduxu logs show --level error
+```
+
+<Callout type="info">
+Available log levels depend on the configured logging settings and Suduxu version.
+</Callout>
+
+---
+
+## Search Logs
+
+Filter log entries by text.
+
+```bash
+suduxu logs show --grep "connected"
+```
+
+Only log entries containing the specified text will be displayed.
+
+You can combine text filtering with other options:
+
+```bash
+suduxu logs show --level error --grep "network"
+```
+
+---
+
+## Filter by Time Range
+
+Display logs within a specific time window.
+
+<Tabs items={["Since", "Until", "Range"]}>
+  <Tab value="Since">
+
+```bash
+suduxu logs show --since "2026-01-01"
+```
+
+Shows logs after the specified timestamp.
+
+  </Tab>
+
+  <Tab value="Until">
+
+```bash
+suduxu logs show --until "2026-01-01"
+```
+
+Shows logs before the specified timestamp.
+
+  </Tab>
+
+  <Tab value="Range">
+
+```bash
+suduxu logs show --since "2026-01-01" --until "2026-01-31"
+```
+
+Shows logs within the specified range.
+
+  </Tab>
+</Tabs>
+
+---
+
+## Combine Filters
+
+All filters can be combined to narrow down results.
+
+```bash
+suduxu logs show \
+  --level error \
+  --since "2026-01-01" \
+  --grep "client"
+```
+
+This displays only error logs containing the word `client` after the specified date.
+
+---
+
+## Clear Logs
+
+Delete all stored log entries.
+
+```bash
+suduxu logs clear
+```
+
+<Callout type="warning">
+This action permanently removes all stored logs and cannot be undone.
+</Callout>
+
+---
+
+## Common Workflows
+
+<Tabs items={["Debugging", "Live Monitoring", "Searching"]}>
+  <Tab value="Debugging">
+
+```bash
+suduxu logs show --level error
+```
+
+View only error messages.
+
+  </Tab>
+
+  <Tab value="Live Monitoring">
+
+```bash
+suduxu logs show --follow
+```
+
+Watch logs in real time.
+
+  </Tab>
+
+  <Tab value="Searching">
+
+```bash
+suduxu logs show --grep "connected"
+```
+
+Find entries containing specific text.
+
+  </Tab>
+</Tabs>

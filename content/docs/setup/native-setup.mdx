@@ -1,0 +1,96 @@
+---
+title: Native Setup
+icon: Cpu
+description: Prepare the Suduxu runtime and project structure before launching the server.
+---
+
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Native Setup
+
+Before Suduxu can run, the native runtime files and configuration must be placed in the expected project structure.
+
+## Required structure
+
+Suduxu expects a `DLL` directory in your project root:
+
+<Files>
+  <Folder name="DLL" defaultOpen>
+    <Folder name="Files">
+      <File name="mobile-theme.html" />
+      <File name="compact-theme.xml" />
+    </Folder>
+
+    <File name="suduxu.json" />
+    <File name="suduxu.dll" />
+    <File name="suduxu.so" />
+    <File name="suduxu.dylib" />
+  </Folder>
+</Files>
+
+## Native runtime
+
+The runtime provides the core Suduxu server implementation.
+
+| Platform | File |
+|----------|------|
+| Windows  | suduxu.dll |
+| Linux    | suduxu.so |
+| macOS    | suduxu.dylib |
+
+You only need to include the platforms you intend to support.
+
+## Configuration file
+
+`suduxu.json` defines how the runtime behaves at startup.
+
+It controls:
+
+- Network configuration
+- Security settings
+- Logging behavior
+- Device handling
+- Theme loading
+
+See the Configuration section for full details.
+
+## Theme directory
+
+The `Files` directory contains all UI themes sent to connected devices.
+
+Suduxu supports:
+
+- HTML themes
+- XML themes
+
+These files are loaded at runtime and can be updated without recompiling your application.
+
+<Callout>
+Theme selection is handled through configuration, not code.
+</Callout>
+
+## Engine integrations
+
+Some environments handle initialization automatically:
+
+- Unity SDK initializes Suduxu through the prefab/component
+- Other engines may provide similar wrappers in the future
+
+For low-level integrations (Rust, C, C#), you must initialize the runtime manually before calling any API functions.
+
+## Startup behavior
+
+At startup Suduxu:
+
+1. Loads native runtime libraries
+2. Reads `suduxu.json`
+3. Loads available themes
+4. Initializes networking
+5. Waits for clients to connect
+
+If required files are missing, startup may fail or fall back to defaults depending on the integration layer.
+
+## Next step
+
+Continue with Configuration to adjust runtime behavior and networking options.

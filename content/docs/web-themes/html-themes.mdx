@@ -1,0 +1,119 @@
+---
+title: HTML-Themes
+icon: FileCode
+description: Build custom web-based Suduxu controller layouts using reusable HTML components.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+# HTML Themes
+
+HTML themes allow you to build custom controller interfaces using standard web technologies.
+
+Unlike XML themes, which are converted into native Android UI components, HTML themes are rendered inside a WebView on the client device. This gives you complete control over layout, styling, animations, and interactions through HTML, CSS, and JavaScript.
+
+## How HTML Themes Work
+
+```text
+HTML Theme
+    ↓
+Suduxu Client
+    ↓
+WebView
+    ↓
+Custom Controller UI
+```
+
+Because themes run inside a WebView, you can use:
+
+- HTML
+- CSS
+- JavaScript
+- Custom styling
+- Animations
+- Responsive layouts
+
+This makes HTML themes the most flexible theming option available in Suduxu.
+
+<Callout type="info">
+HTML themes are ideal when you need highly customized interfaces, advanced layouts,
+or visual effects that would be difficult to achieve with XML themes.
+</Callout>
+
+## Suduxu Web Components
+
+Suduxu provides a collection of reusable custom HTML elements that automatically integrate with the Suduxu input system.
+
+Available components:
+
+| Component | Purpose |
+|------------|----------|
+| `sdx-button` | Standard button input |
+| `sdx-dpad` | Directional pad |
+| `sdx-joystick` | Analog joystick |
+| `sdx-exit-button` | Exit / back button |
+
+These components automatically dispatch Suduxu input events and require significantly less code than building controls from scratch.
+
+## Example
+
+```html
+<sdx-button button-input="A">
+    A
+</sdx-button>
+
+<sdx-button button-input="B">
+    B
+</sdx-button>
+```
+
+## Including Components
+
+Include the scripts and stylesheets for the components you want to use.
+
+```html
+<script defer src="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0-hotfix/dist/sdxbutton.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Suduxu/Suduxu-Web-Themes@v1.0.0-hotfix/dist/sdxbutton.min.css">
+```
+
+Additional components such as the D-Pad, Joystick and Exit Button are available through the same repository.
+
+## Component Documentation
+
+Detailed documentation for every component, available attributes, events, and styling options can be found in the official repository:
+
+- Suduxu Web Themes
+  - https://github.com/Suduxu/Suduxu-Web-Themes
+
+The repository contains:
+
+- Component documentation
+- Usage examples
+- Event documentation
+- Styling guides
+- Build instructions
+- Source code
+
+## When to Use HTML Themes
+
+Choose HTML themes when you need:
+
+- Complex layouts
+- Custom animations
+- Responsive interfaces
+- Advanced styling
+- Full control over rendering
+- Web technology integration
+
+Choose XML themes when you want:
+
+- Native rendering
+- Faster theme creation
+- Simpler layouts
+- Minimal styling requirements
+
+<Callout type="tip">
+For most controller layouts, XML themes are usually faster to build. HTML themes
+become valuable when you need complete visual freedom.
+</Callout>

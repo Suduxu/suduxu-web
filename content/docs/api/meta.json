@@ -1,0 +1,9 @@
+{
+    "title": "API",
+    "icon": "Code",
+    "pages": [
+        "lifecycle",
+        "events-system",
+        "clients-api"
+    ]
+}

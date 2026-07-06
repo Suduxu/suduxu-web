@@ -1,0 +1,227 @@
+---
+title: Lifecycle
+icon: Power
+description: How Suduxu initializes, runs, and shuts down across runtime environments.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+Suduxu runs as a native runtime controlled by a host environment. Its lifecycle is consistent across platforms, but initialization and execution differ depending on whether it is embedded (Unity) or manually managed (Rust / native bindings).
+
+## Lifecycle stages
+
+- Initialization
+- Launch
+- Runtime
+- Shutdown
+
+---
+
+## Initialization
+
+<Tabs items={["Rust", "Unity"]}>
+
+<Tab value="Rust">
+
+The native runtime must be explicitly loaded before any other API usage.
+
+```rs
+init_suduxu(configuration)
+```
+
+This step:
+- Loads the Suduxu ABI (DLL / SO / DYLIB)
+- Applies behaviour configuration
+- Prepares internal event system
+
+No runtime behaviour starts at this stage.
+</Tab>
+<Tab value="Unity">
+Initialization is handled automatically by the `Suduxu Component` prefab. 
+
+This step:
+- Loads native ABI on scene start
+- Reads configuration from `suduxu.json`
+- Initializes client and server wrappers
+- Registers internal event handlers
+
+No manual initialization is required for Unity projects.
+</Tab>
+</Tabs>
+
+---
+
+## Launch
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+launch_suduxu()
+```
+
+This step: 
+- Starts the native server thread
+- Registers event callbacks
+- Starts TCP and UDP subsystems
+- Enables client discovery and connection handling
+- Activates input and sensor processing
+
+The runtime becomes active after this call completes.
+</Tab>
+<Tab value="Unity">
+```cs
+suduxu.Launch();
+```
+
+This step:
+- Spawns the server thread
+- Registers native callbacks
+- Starts networking automatically
+- Activates input and sensor pipelines
+
+Typically called automatically during scene startup, but can be manually triggered if needed (handled by the `Suduxu Component` prefab).
+</Tab>
+</Tabs>
+
+---
+
+## Runtime
+During runtime, Suduxu operates on an event-driven system.
+
+### Core behaviour
+
+- Spawns the server thread
+- Registers native callbacks
+- Starts networking automatically
+- Activates input and sensor pipelines
+
+### Client access
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+for_client(id);
+for_broadcast();
+```
+
+The default client id to be used is configured when initializing Suduxu, with `0` reserved for broadcast. 
+</Tab>
+<Tab value="Unity">
+```cs
+suduxu.Input.For(id);
+suduxu.Client.Broadcast();
+```
+
+The default client id to be used is configured in the Unity Editor on the `Suduxu Component` element, with `0` reserved for broadcast.
+</Tab>
+</Tabs>
+
+## Shutdown
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+shutdown_suduxu()
+```
+
+This step:
+- Stops the native runtime
+- Joins the server thread
+- Disconnects all clients
+- Releases native resources
+</Tab>
+<Tab value="Unity">
+```cs
+suduxu.Shutdown();
+```
+This step:
+- Stops the native runtime
+- Joins the background thread
+- Clears internal state
+- Releases native resources
+</Tab>
+</Tabs>
+
+---
+
+## Accessing configuration and addresses
+
+Configuration, password, and address information are only valid after the runtime has fully started. Accessing this information immediately after launch may result in null or default values. To ensure valid data, maybe add a short delay of 100-200ms after launch before reading configuration or address information.
+
+Suduxu allows you to access different configuration and address information through the API:
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+thread::sleep(Duration::from_millis(200)); // Optional delay to ensure runtime is fully initialized
+
+let config: SuduxuConfig = config(); // Access configuration from `suduxu.json`
+let password: Option<u32> = password(); // Access the runtime password
+let addresses: Arc<AddressObject> = addresses(); // Access network addresses
+let qr: QrCode = qr(); // Access QR code information for client connection to the server
+```
+
+> See Reference/Data-Models for details on the [`SuduxuConfig`](/docs/reference/data-models#suduxuconfig), [`AddressObject`](/docs/reference/data-models#addressobject) and [`QrCode`](/docs/reference/data-models#qrcode) data models.
+</Tab>
+<Tab value="Unity">
+```cs
+// Delay already handled by the `Suduxu Component` prefab, so no manual delay is necessary.
+SuduxuConfig config = suduxu.Config; // Access configuration from `suduxu.json`
+uint? password = suduxu.Password; // Access the runtime password
+AddressObject addresses = suduxu.Addresses; // Access network addresses
+// QR-Code will be rendered by passing a `RawImage` component to the `Suduxu Component` prefab, so no direct API access is necessary in Unity.
+```
+
+> See Reference/Data-Models for details on the [`SuduxuConfig`](/docs/reference/data-models#suduxuconfig), [`AddressObject`](/docs/reference/data-models#addressobject) and [`QrCode`](/docs/reference/data-models#qrcode) data models.
+</Tab>
+</Tabs>
+---
+
+## Lifecycle rules
+
+- Initialization must occur before launch (except Unity automatic setup)
+- Runtime is asynchronous and event-driven
+- Configuration and addresses are only valid after startup completes
+- Unity manages lifecycle automatically
+- Rust / native environments require explicit control
+
+---
+
+## Minimal flow
+
+<Tabs items={["Rust", "Unity"]}>
+<Tab value="Rust">
+```rs
+init_suduxu(config);
+launch_suduxu();
+
+// Runtime operations...
+
+shutdown_suduxu();
+```
+</Tab>
+<Tab value="Unity">
+```cs
+// Add Suduxu Component to scene
+// Suduxu initializes and launches automatically on scene start
+// Runtime operations...
+// Suduxu shuts down automatically on scene exit
+```
+</Tab>
+</Tabs>
+
+<Callout type="info">
+In order to use the `suduxu` object in Unity it first needs to be injected, this is achieved the following way:
+
+```cs
+public class SuduxuExample : MonoBehaviour {
+  [injected]
+  private Suduxu suduxu;
+}
+```
+
+Otherwise it can also be called like this:
+```cs
+Suduxu.Instance
+```
+</Callout>

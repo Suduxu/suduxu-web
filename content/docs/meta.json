@@ -1,0 +1,12 @@
+{
+    "title": "Documentation",
+    "pages": [
+        "index",
+        "overview",
+        "setup",
+        "cli",
+        "api",
+        "web-themes",
+        "reference"
+    ]
+}

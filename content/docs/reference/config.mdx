@@ -1,0 +1,522 @@
+---
+title: Config
+icon: Braces
+description: Reference for the suduxu.json configuration file.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Configuration
+
+Suduxu is configured through a `suduxu.json` file located next to the native runtime. Suduxu provides a service for creating `suduxu.json` files with custom configurations under [Suduxu Configurator](https://suduxu.com/configurator).
+
+## Example Configuration
+
+```json
+{
+  "server": {
+    "address": "0.0.0.0",
+    "port": 9000,
+    "tcp_port": null,
+    "udp_port": null,
+    "file_port": null,
+    "connection_strategy": "Open",
+    "list": null,
+    "rate_limit": {
+      "enabled": false,
+      "max_tcp_requests_per_minute": null
+    }
+  },
+  "logging": {
+    "debug_level": "Debug",
+    "log_file": null,
+    "max_log_size": null,
+    "log_to_console": true
+  },
+  "security": {
+    "enabled": false,
+    "password": null
+  },
+  "file_sharing": {
+    "enabled": false,
+    "shared_directory": null,
+    "files": null,
+    "initially_loaded": null
+  },
+  "devices": {
+    "initially_send_sensor_data": false,
+    "max_devices": 4,
+    "allowed_device_types": [
+      "Android",
+      "iOS",
+      "Windows",
+      "Linux",
+      "macOS",
+      "Other"
+    ],
+    "initial_frame_rate": 60
+  },
+  "screen_capture": {
+    "enabled": false,
+    "capture_on_server": false,
+    "capture_directory": null
+  },
+  "sensors": {
+    "accelerometer": true,
+    "gyroscope": true,
+    "magnetometer": true,
+    "temperature": false,
+    "humidity": false,
+    "pressure": false,
+    "light": false
+  },
+  "developer": {
+    "prefer_cli": false,
+    "allow_mocked_sensors": false,
+    "allow_mocked_buttons": false
+  },
+  "health_check": {
+    "server": {
+      "enabled": false,
+      "interval_ms": null,
+      "timeout_ms": null
+    },
+    "client": {
+      "enabled": false,
+      "interval_ms": null,
+      "timeout_ms": null
+    }
+  }
+}
+```
+
+---
+
+# Server
+
+Controls networking and client connections.
+
+## address
+
+IP address the server binds to.
+
+```json
+{
+  "address": "0.0.0.0"
+}
+```
+
+## port
+
+Shared port used for all services.
+
+```json
+{
+  "port": 9000
+}
+```
+
+## tcp_port
+
+Overrides the TCP port.
+
+```json
+{
+  "tcp_port": 9001
+}
+```
+
+## udp_port
+
+Overrides the UDP port.
+
+```json
+{
+  "udp_port": 9002
+}
+```
+
+## file_port
+
+Overrides the file transfer port.
+
+```json
+{
+  "file_port": 9003
+}
+```
+
+## connection_strategy
+
+Controls how the `list` field is interpreted.
+
+### Values
+
+- `Open`
+- `Whitelist`
+- `Blacklist`
+
+```json
+{
+  "connection_strategy": "Whitelist"
+}
+```
+
+## list
+
+List of allowed or blocked addresses depending on the selected connection strategy.
+
+```json
+{
+  "list": [
+    "192.168.1.50",
+    "192.168.1.51"
+  ]
+}
+```
+
+## rate_limit
+
+TCP request rate limiting configuration.
+
+### enabled
+
+Enables rate limiting.
+
+### max_tcp_requests_per_minute
+
+Maximum allowed TCP requests per minute.
+
+```json
+{
+  "rate_limit": {
+    "enabled": true,
+    "max_tcp_requests_per_minute": 1000
+  }
+}
+```
+
+---
+
+# Logging
+
+Controls runtime logging.
+
+## debug_level
+
+### Values
+
+- `Error`
+- `Warn`
+- `Info`
+- `Debug`
+
+```json
+{
+  "debug_level": "Debug"
+}
+```
+
+## log_file
+
+Optional file path for log output.
+
+```json
+{
+  "log_file": "logs/suduxu.log"
+}
+```
+
+## max_log_size
+
+Maximum log file size in bytes. When the limit is reached, the current log file will be cleared and logging will continue in the same file.
+
+```json
+{
+  "max_log_size": 10485760
+}
+```
+
+## log_to_console
+
+Enables console logging.
+
+```json
+{
+  "log_to_console": true
+}
+```
+
+---
+
+# Security
+
+Controls password protection.
+
+## enabled
+
+Require a password before clients can connect.
+
+```json
+{
+  "enabled": true
+}
+```
+
+## password
+
+Six digit access code.
+
+```json
+{
+  "password": 123456
+}
+```
+
+<Callout type="info">
+If security is enabled and no password is provided, Suduxu automatically generates one.
+</Callout>
+
+---
+
+# File Sharing
+
+Controls file and theme distribution.
+
+## enabled
+
+Enable file sharing.
+
+## shared_directory
+
+Directory scanned for shared files.
+
+```json
+{
+  "shared_directory": "files"
+}
+```
+
+## initially_loaded
+
+Files automatically loaded when the server starts.
+
+```json
+{
+  "initially_loaded": [
+    "Default Theme"
+  ]
+}
+```
+
+## files
+
+List of manually registered files.
+
+### SharedFile
+
+```json
+{
+  "name": "Default Theme",
+  "path": "themes/default.xml",
+  "type": "XML-Theme"
+}
+```
+
+### Fields
+
+| Field | Description |
+|---------|---------|
+| name | Display name |
+| path | File path |
+| type | Shared file type |
+| theme_constraints | Optional width constraints |
+
+### SharedFileType
+
+- `Audio`
+- `HTML-Theme`
+- `XML-Theme`
+- `Screenshot`
+
+### ThemeConstraints
+
+```json
+{
+  "max_width": 1200,
+  "min_width": 320
+}
+```
+
+---
+
+# Devices
+
+Controls connected devices.
+
+## initially_send_sensor_data
+
+Start sensor streaming immediately after connection.
+
+```json
+{
+  "initially_send_sensor_data": true
+}
+```
+
+## max_devices
+
+Maximum number of simultaneous devices.
+
+```json
+{
+  "max_devices": 4
+}
+```
+
+## allowed_device_types
+
+Restrict which platforms may connect.
+
+### Values
+
+- `Android`
+- `iOS`
+- `Windows`
+- `Linux`
+- `macOS`
+- `Other`
+
+```json
+{
+  "allowed_device_types": [
+    "Android",
+    "iOS"
+  ]
+}
+```
+
+## initial_frame_rate
+
+Initial device update rate.
+
+```json
+{
+  "initial_frame_rate": 60
+}
+```
+
+---
+
+# Screen Capture
+
+Controls screenshot support.
+
+## enabled
+
+Enable screenshot functionality.
+
+## capture_on_server
+
+Store screenshots on the host machine.
+
+## capture_directory
+
+Directory used for screenshots.
+
+```json
+{
+  "capture_directory": "captures"
+}
+```
+
+---
+
+# Sensors
+
+Controls available sensor streams.
+
+```json
+{
+  "accelerometer": true,
+  "gyroscope": true,
+  "magnetometer": true,
+  "temperature": false,
+  "humidity": false,
+  "pressure": false,
+  "light": false
+}
+```
+
+| Field | Description |
+|---------|---------|
+| accelerometer | Enable accelerometer data |
+| gyroscope | Enable gyroscope data |
+| magnetometer | Enable magnetometer data |
+| temperature | Enable temperature sensor |
+| humidity | Enable humidity sensor |
+| pressure | Enable pressure sensor |
+| light | Enable ambient light sensor |
+
+---
+
+# Developer
+
+Developer-only features.
+
+## prefer_cli
+
+Causes Suduxu to be controlled through the CLI instead of the API.
+
+## allow_mocked_sensors
+
+Allow mocked sensor data.
+
+## allow_mocked_buttons
+
+Allow mocked button input.
+
+```json
+{
+  "prefer_cli": true,
+  "allow_mocked_sensors": true,
+  "allow_mocked_buttons": true
+}
+```
+
+<Callout type="warn">
+Developer options should be disabled for production deployments.
+</Callout>
+
+---
+
+# Health Check
+
+Connection health monitoring.
+
+## enabled
+
+Enable health checks.
+
+## interval_ms
+
+Heartbeat interval.
+
+## timeout_ms
+
+Timeout before disconnecting a peer.
+
+```json
+{
+  "client": {
+    "enabled": true,
+    "interval_ms": 1000,
+    "timeout_ms": 5000
+  },
+  "server": {
+    "enabled": true,
+    "interval_ms": 1000,
+    "timeout_ms": 5000
+  }
+}
+```

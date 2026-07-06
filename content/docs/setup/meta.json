@@ -1,0 +1,9 @@
+{
+    "title": "Setup",
+    "icon": "Settings2",
+    "pages": [
+        "installation",
+        "native-setup",
+        "first-launch"
+    ]
+}

@@ -1,0 +1,129 @@
+---
+title: Config Commands
+icon: Settings
+description: Manage, import, export, inspect, and reset Suduxu configuration files.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+The `config` command group is used to manage the local `suduxu.json` configuration used by Suduxu.
+
+<Callout type="info">
+Configuration files control networking, security, themes, screenshots, logging, and other runtime behavior. See the Configuration Reference for a complete breakdown of all available settings.
+</Callout>
+
+## Show Current Configuration
+
+Display the currently active configuration.
+
+```bash
+suduxu config show
+```
+
+This prints the entire configuration to the terminal.
+
+---
+
+## Import a Configuration
+
+Replace the current configuration with a configuration file.
+
+```bash
+suduxu config import my-config.json
+```
+
+After importing, the selected file becomes the active Suduxu configuration.
+
+<Callout type="warning">
+Importing a configuration replaces the currently active configuration.
+</Callout>
+
+---
+
+## Export a Configuration
+
+Export the current configuration to a file.
+
+```bash
+suduxu config export backup.json
+```
+
+This creates a portable configuration file that can be shared or stored as a backup.
+
+### Export Behavior
+
+When exporting a configuration, Suduxu automatically adjusts a few settings to make the exported file safe for distribution:
+
+- `prefer_cli` is set to `false`
+- Mocked inputs are disabled
+
+This prevents environment-specific settings from being unintentionally shared.
+
+---
+
+## Reset Configuration
+
+Restore the default Suduxu configuration.
+
+```bash
+suduxu config reset
+```
+
+This recreates the configuration using Suduxu's default values.
+
+<Callout type="warning">
+Any custom configuration changes will be lost after a reset.
+</Callout>
+
+---
+
+## Clear Configuration
+
+Delete the active configuration entirely.
+
+```bash
+suduxu config clear
+```
+
+The configuration file is removed from the system.
+
+<Callout type="warning">
+This command deletes the configuration file. Suduxu may recreate it with default values during the next startup depending on your environment.
+</Callout>
+
+---
+
+## Common Workflows
+
+<Tabs items={["Backup", "Restore", "Reset"]}>
+  <Tab value="Backup">
+
+Create a backup of the current configuration.
+
+```bash
+suduxu config export backup.json
+```
+
+  </Tab>
+
+  <Tab value="Restore">
+
+Restore a previously exported configuration.
+
+```bash
+suduxu config import backup.json
+```
+
+  </Tab>
+
+  <Tab value="Reset">
+
+Reset everything back to defaults.
+
+```bash
+suduxu config reset
+```
+
+  </Tab>
+</Tabs>

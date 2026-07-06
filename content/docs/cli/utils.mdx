@@ -1,0 +1,187 @@
+---
+title: Utils
+icon: Wrench
+description: Utility commands for managing Suduxu runtime versions and installed native binaries.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+The `utils` command group is used to manage Suduxu runtime binaries (ABI/DLL layer), including listing available releases, importing specific versions, and upgrading existing installations.
+
+These commands operate directly on the native Suduxu runtime files retrieved from the official release repository.
+
+---
+
+## Available Releases
+
+List all available Suduxu runtime versions.
+
+```bash
+suduxu utils list
+```
+
+This fetches release metadata from the official repository and displays:
+
+- Version tag
+- Release date
+- Pre-release status
+- Asset count
+- Download URL
+
+---
+
+## Import a Runtime Version
+
+Install a specific Suduxu runtime version.
+
+```bash
+suduxu utils import latest
+```
+
+Or specify a version:
+
+```bash
+suduxu utils import 1.2.0
+```
+
+### Target OS selection
+
+<Tabs items={["All Platforms", "Windows", "Linux", "macOS"]}>
+  <Tab value="All Platforms">
+
+```bash
+suduxu utils import latest --os all
+```
+
+Downloads all available platform binaries.
+
+  </Tab>
+
+  <Tab value="Windows">
+
+```bash
+suduxu utils import latest --os windows
+```
+
+Downloads only the Windows runtime (`.dll`).
+
+  </Tab>
+
+  <Tab value="Linux">
+
+```bash
+suduxu utils import latest --os linux
+```
+
+Downloads only the Linux runtime (`.so`).
+
+  </Tab>
+
+  <Tab value="macOS">
+
+```bash
+suduxu utils import latest --os mac-os
+```
+
+Downloads only the macOS runtime (`.dylib`).
+
+  </Tab>
+</Tabs>
+
+<Callout type="info">
+Imported binaries are downloaded from the official Suduxu release repository and placed in the current working directory.
+</Callout>
+
+---
+
+## Upgrade Runtime
+
+Upgrade an existing installation by replacing installed binaries.
+
+```bash
+suduxu utils upgrade latest
+```
+
+Or target a specific version:
+
+```bash
+suduxu utils upgrade 1.3.0
+```
+
+### OS-specific upgrade
+
+<Tabs items={["All Platforms", "Single Platform"]}>
+  <Tab value="All Platforms">
+
+```bash
+suduxu utils upgrade latest --os all
+```
+
+Updates all installed platform binaries.
+
+  </Tab>
+
+  <Tab value="Single Platform">
+
+```bash
+suduxu utils upgrade latest --os linux
+```
+
+Updates only the specified runtime binary.
+
+  </Tab>
+</Tabs>
+
+<Callout type="warning">
+Upgrading will replace existing runtime binaries in the working directory. Locked files may be renamed as backup before replacement.
+</Callout>
+
+---
+
+## Notes on Behavior
+
+- If no runtime file exists, `upgrade` falls back to `import`
+- Existing binaries are deleted or renamed before replacement
+- Downloads are streamed directly from GitHub releases
+- Only assets matching the selected OS are installed
+
+<Callout type="info">
+Default OS selection is `all`, which installs all available binaries. Use `--os` to target a specific platform.
+</Callout>
+
+---
+
+## Typical Workflow
+
+<Tabs items={["Fresh Install", "Update Runtime", "Cross-platform Install"]}>
+  <Tab value="Fresh Install">
+
+```bash
+suduxu utils import latest --os all
+```
+
+Installs all required runtime binaries for the current system.
+
+  </Tab>
+
+  <Tab value="Update Runtime">
+
+```bash
+suduxu utils upgrade latest
+```
+
+Safely updates existing binaries to the newest version.
+
+  </Tab>
+
+  <Tab value="Cross-platform Install">
+
+```bash
+suduxu utils import 1.2.0 --os all
+```
+
+Installs a specific known-compatible version across platforms.
+
+  </Tab>
+</Tabs>

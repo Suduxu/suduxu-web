@@ -14,26 +14,7 @@ Unlike XML themes, which are converted into native Android UI components, HTML t
 
 ## How HTML Themes Work
 
-```text
-HTML Theme
-    ↓
-Suduxu Client
-    ↓
-WebView
-    ↓
-Custom Controller UI
-```
-
-Because themes run inside a WebView, you can use:
-
-- HTML
-- CSS
-- JavaScript
-- Custom styling
-- Animations
-- Responsive layouts
-
-This makes HTML themes the most flexible theming option available in Suduxu.
+HTML themes run inside a WebView through the Suduxu Client, allowing you to build custom controller interfaces using HTML, CSS, JavaScript, custom styling, animations, and responsive layouts, making them the most flexible theming option available in Suduxu.
 
 <Callout type="info">
 HTML themes are ideal when you need highly customized interfaces, advanced layouts,
@@ -81,39 +62,21 @@ Additional components such as the D-Pad, Joystick and Exit Button are available 
 
 ## Component Documentation
 
-Detailed documentation for every component, available attributes, events, and styling options can be found in the official repository:
+Detailed documentation for every component, available attributes, events, and styling options can be found in the official [Suduxu Web Themes repository](https://github.com/Suduxu/Suduxu-Web-Themes).
 
-- Suduxu Web Themes
-  - https://github.com/Suduxu/Suduxu-Web-Themes
+The repository contains component documentation, usage examples, event references, styling guides, build instructions, and the complete source code.
 
-The repository contains:
+## Choosing Between HTML and XML Themes
 
-- Component documentation
-- Usage examples
-- Event documentation
-- Styling guides
-- Build instructions
-- Source code
+Select the theme format that best matches your UI requirements:
 
-## When to Use HTML Themes
-
-Choose HTML themes when you need:
-
-- Complex layouts
-- Custom animations
-- Responsive interfaces
-- Advanced styling
-- Full control over rendering
-- Web technology integration
-
-Choose XML themes when you want:
-
-- Native rendering
-- Faster theme creation
-- Simpler layouts
-- Minimal styling requirements
+| HTML Themes | XML Themes |
+|-------------|------------|
+| Web technology integration | Native rendering |
+| Responsive interfaces | Faster theme creation |
+| Advanced styling | Simpler layouts |
+| Full control over rendering | Minimal styling requirements |
 
 <Callout type="tip">
-For most controller layouts, XML themes are usually faster to build. HTML themes
-become valuable when you need complete visual freedom.
+For most controller layouts, XML themes are usually faster to build. HTML themes become valuable when you need complete visual freedom.
 </Callout>

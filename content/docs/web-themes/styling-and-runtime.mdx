@@ -4,104 +4,167 @@ icon: Paintbrush
 description: How theme definitions are translated into native rendering behavior and how layout, spacing, and styling are resolved at runtime.
 ---
 
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+
 ## Overview
 
-Suduxu themes are not rendered directly. They are first parsed into an intermediate node structure and then resolved by a runtime renderer depending on the theme type.
+Suduxu themes aren't rendered directly. They're first parsed into an intermediate node structure, then resolved by a runtime renderer depending on the theme type — both share the same `UINode` + property map underneath.
 
-- XML themes → native Compose components
-- HTML themes → WebView-based rendering with injected components
-- Shared concept → `UINode` + property map
+<Cards>
+  <Card title="XML themes" description="Resolved into native Compose components." />
+  <Card title="HTML themes" description="Rendered in a WebView with injected components." />
+</Cards>
 
 ---
 
-## Runtime Model
+## Runtime model
 
 Every UI element is represented as a node:
 
-- `type`: component identifier (e.g. Button, Column)
-- `props`: key-value map of configuration
-- `children`: nested UI nodes
+<TypeTable
+  type={{
+    type: {
+      description: "Component identifier.",
+      type: '"Button" | "Column" | ...',
+    },
+    props: {
+      description: "Key-value map of configuration.",
+      type: "Record<string, unknown>",
+    },
+    children: {
+      description: "Nested UI nodes.",
+      type: "UINode[]",
+    },
+  }}
+/>
 
-Rendering is recursive: each node resolves itself and then delegates rendering of its children.
+Rendering is recursive — each node resolves itself, then delegates rendering of its children.
 
 ---
 
-## Property Resolution
+## Property resolution
 
-Props are resolved in a fixed order:
+Props are resolved in a fixed priority order:
 
-1. Explicit component props (e.g. `backgroundColor`, `size`)
-2. Layout modifiers (padding, fill, spacing)
-3. Defaults defined in component implementation
+<Steps>
+<Step>
+### Explicit component props
+Values set directly on the node, e.g. `backgroundColor`, `size`.
+</Step>
+<Step>
+### Layout modifiers
+Padding, fill, and spacing, applied next.
+</Step>
+<Step>
+### Component defaults
+Falls back to whatever the component implementation defines.
+</Step>
+</Steps>
 
-Unrecognized props are ignored unless explicitly handled by a component.
+<Callout type="info">
+  Unrecognized props are ignored unless a component explicitly handles them.
+</Callout>
 
 ---
 
-## Layout System
+## Layout system
 
-Layout behavior is driven by a shared modifier pipeline:
+A shared modifier pipeline drives layout across both theme types.
 
 ### Padding
 
-Padding supports two formats:
+<Tabs items={["Uniform", "Directional"]}>
+<Tab value="Uniform">
+```json
+{ "padding": 16 }
+```
+</Tab>
+<Tab value="Directional">
+```json
+{ "padding": { "top": 8, "bottom": 8, "start": 16, "end": 16 } }
+```
+`left` / `right` are accepted as aliases for `start` / `end`.
+</Tab>
+</Tabs>
 
-- uniform value
-- directional map
+### Fill behavior
 
-- `start`, `end`, `top`, `bottom` (or `left` / `right` aliases)
+<TypeTable
+  type={{
+    fillMaxWidth: {
+      description: "Expands the node to fill available width.",
+      type: "boolean",
+    },
+    fillMaxHeight: {
+      description: "Expands the node to fill available height.",
+      type: "boolean",
+    },
+    fillMaxSize: {
+      description: "Expands the node to fill both axes.",
+      type: "boolean",
+    },
+  }}
+/>
 
-### Fill Behavior
+Fill modifiers resolve before component-specific ones.
 
-Nodes can opt into layout expansion:
-
-- `fillMaxWidth`
-- `fillMaxHeight`
-- `fillMaxSize`
-
-These are resolved before component-specific modifiers.
-
-### Example behavior
-
-A `Column` with `fillMaxSize = true` will always override explicit width/height constraints.
-
----
-
-## Runtime Rendering Flow
-
-Each node goes through:
-
-1. Parse node from theme definition
-2. Convert props into typed values
-3. Apply layout modifiers (`padding`, `fill`, sizing)
-4. Render component (Compose or WebView equivalent)
-5. Recursively render children
-
-This ensures consistent behavior across XML and HTML themes.
-
----
-
-## Shared vs Platform-Specific Behavior
-
-### Shared
-
-- Node structure (`UINode`)
-- Prop parsing rules
-- Layout system (padding, fill, spacing semantics)
-
-### Platform-specific
-
-- XML → Jetpack Compose rendering
-- HTML → WebView DOM injection + JS runtime components
+<Callout type="warning">
+  A `Column` with `fillMaxSize = true` always overrides explicit width/height
+  constraints.
+</Callout>
 
 ---
 
-## Important Constraint
+## Runtime rendering flow
 
-Styling is intentionally **not CSS-based in XML themes**. Instead, styling is expressed through:
+<Steps>
+<Step>
+### Parse
+Read the node from the theme definition.
+</Step>
+<Step>
+### Convert
+Turn props into typed values.
+</Step>
+<Step>
+### Apply layout
+Resolve `padding`, `fill`, and sizing modifiers.
+</Step>
+<Step>
+### Render
+Draw the component — Compose or its WebView equivalent.
+</Step>
+<Step>
+### Recurse
+Render children the same way.
+</Step>
+</Steps>
 
-- explicit props
-- layout modifiers
-- component-level parameters
+This keeps behavior consistent across XML and HTML themes.
 
-This keeps XML themes deterministic and platform-independent.
+---
+
+## Shared vs. platform-specific
+
+<Cards>
+  <Card
+    title="Shared"
+    description="Node structure (UINode), prop parsing rules, and layout semantics (padding, fill, spacing)."
+  />
+  <Card
+    title="Platform-specific"
+    description="XML renders via Jetpack Compose; HTML renders via WebView DOM injection and a JS runtime."
+  />
+</Cards>
+
+---
+
+<Callout type="info">
+  Styling in XML themes is intentionally **not CSS-based** — it's expressed
+  through explicit props, layout modifiers, and component-level parameters
+  instead, which keeps XML themes deterministic and platform-independent.
+</Callout>

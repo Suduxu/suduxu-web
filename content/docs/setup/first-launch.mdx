@@ -16,14 +16,7 @@ After completing the installation and setup process, the next step is starting S
 <Tabs items={["Unity", "Rust", "CLI"]}>
   <Tab value="Unity">
 
-  Add the **Suduxu Component** prefab to your scene and start the application.
-
-  The Unity SDK automatically handles:
-  
-  - Runtime initialization
-  - Configuration loading
-  - Event registration
-  - Server startup
+  Add the Suduxu Component prefab to your scene and start the application. From there, the Unity SDK automatically initializes the runtime, loads the configuration, registers all required events, and starts the server.
 
   </Tab>
 
@@ -86,14 +79,27 @@ File Address: Not running
 Control Address: 127.0.0.1:50676
 ```
 
-## Connect a device
+## Connect a Device
 
 Once the server is running:
 
-1. Open the Suduxu mobile application.
-2. Scan the generated QR code or connect manually via ip address.
-3. Accept the connection.
-4. Wait for the device to appear as a connected client.
+<Steps>
+<Step>
+Open the Suduxu mobile application.
+</Step>
+
+<Step>
+Scan the generated QR code, or connect manually using the server's IP address.
+</Step>
+
+<Step>
+Accept the connection request on the device.
+</Step>
+
+<Step>
+Wait for the device to appear as a connected client.
+</Step>
+</Steps>
 
 <Callout type="info">
 The QR code contains the connection information required for automatic pairing.

@@ -12,61 +12,64 @@ Suduxu can be installed in two ways depending on your workflow:
 
 The Suduxu runtime contains the native libraries required by all SDKs and integrations.
 
-You can download the runtime manually from:
+Download the latest runtime from the GitHub Releases page:
 
 - [Suduxu ABI GitHub Releases](https://github.com/Suduxu/Suduxu-Release)
 
-The repository contains:
+The release package contains:
 
-- `suduxu.dll` (Windows)
-- `suduxu.so` (Linux)
-- `suduxu.dylib` (macOS)
+<Files>
+    <Folder name="DLL" defaultOpen>
+        <File name="suduxu.dll" />
+        <File name="suduxu.so" />
+        <File name="suduxu.dylib" />
+    </Folder>
+</Files>
 
 Follow the installation instructions in the repository README.
 
 ## Suduxu CLI
 
-The Suduxu CLI provides tools for:
+The Suduxu CLI provides tools for managing servers, viewing logs, editing themes, managing configuration, and downloading or upgrading ABI versions.
 
-- Managing servers
-- Viewing logs
-- Editing themes
-- Managing configuration
-- Downloading and upgrading ABI versions
-
-The CLI can be downloaded from:
-
-- [Suduxu CLI GitHub Releases](https://github.com/Suduxu/Suduxu-Release)
+The CLI can be downloaded from the official [Suduxu CLI GitHub Releases page](https://github.com/Suduxu/Suduxu-Release)
 
 Follow the installation instructions in the repository README.
 
 ## Managing Runtime Versions with the CLI
-
+ 
 After installing the CLI, runtime versions can be managed directly from the terminal.
-
-### List available versions
-
-```bash
-suduxu utils list
-```
-
-### Download the latest runtime
-
-```bash
-suduxu utils import
-```
-
-### Download a specific version
-
-```bash
-suduxu utils import 1.0.0
-```
-
-### Upgrade an existing installation
-
-```bash
-suduxu utils upgrade
-```
+ 
+| Command                    | Description                             |
+| --------------------------- | ---------------------------------------- |
+| `suduxu utils list`         | Lists all available runtime versions.    |
+| `suduxu utils import`       | Downloads the latest runtime.            |
+| `suduxu utils import <version>` | Downloads a specific runtime version. |
+| `suduxu utils upgrade`      | Upgrades an existing installation.       |
+ 
+<Tabs items={['List', 'Import latest', 'Import version', 'Upgrade']}>
+  <Tab value="List">
+    ```bash
+    suduxu utils list
+    ```
+  </Tab>
+  <Tab value="Import latest">
+    ```bash
+    suduxu utils import
+    ```
+  </Tab>
+  <Tab value="Import version">
+    ```bash
+    suduxu utils import 1.0.0
+    ```
+  </Tab>
+  <Tab value="Upgrade">
+    ```bash
+    suduxu utils upgrade
+    ```
+  </Tab>
+</Tabs>
+ 
 
 ## Next Step
 

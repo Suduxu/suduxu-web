@@ -6,70 +6,113 @@ description: Suduxu uses an event-driven architecture to communicate runtime sta
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { TypeTable } from "fumadocs-ui/components/type-table";
 
-Suduxu is built around a centralized event system. The native runtime emits structured events that are dispatched into typed channels on the host side (Rust, Unity, or other bindings).
-
-These events are the primary mechanism for reacting to runtime behavior.
+Suduxu is built around a centralized event system. The native runtime emits structured events that are dispatched into typed channels on the host side (Rust, Unity, or other bindings) — these are the primary mechanism for reacting to runtime behavior.
 
 ---
 
 ## Event categories
 
-Suduxu groups events into five core domains:
-
-- TCP events (connection lifecycle, errors)
-- UDP events (input, sensor data, screenshots)
-- State events (battery, network)
-- Health events (device availability)
-- Log events (diagnostics and debugging)
-
----
+<Cards>
+  <Card title="TCP" description="Connection lifecycle and errors." />
+  <Card title="UDP" description="Input, sensor data, and screenshots." />
+  <Card title="State" description="Battery, network, and health." />
+  <Card title="Log" description="Diagnostics and debugging." />
+</Cards>
 
 ## Event flow
 
-All events originate from the native layer and are routed through a unified callback system:
-
-```text
-Native runtime → JSON event → EventObject → handler dispatch → typed API events
-```
-
-Each event is:
-- Serialized as JSON in the native layer
-- Passed through an FFI callback
-- Deserialized into an EventObject
-- Routed into a specific handler
+<Steps>
+<Step>
+### Emit
+The native layer serializes an event as JSON.
+</Step>
+<Step>
+### Cross the FFI boundary
+The JSON payload is passed through an FFI callback.
+</Step>
+<Step>
+### Deserialize
+The payload becomes a typed `EventObject`.
+</Step>
+<Step>
+### Dispatch
+The object is routed to its specific handler.
+</Step>
+</Steps>
 
 ---
 
-## TCP-Events
+## TCP events
+
 <Tabs items={["Rust", "Unity"]}>
 <Tab value="Rust">
-Handled via:
-- `ON_TCP_START()`: Emitted when the TCP server starts.
-- `ON_TCP_STOP()`: Emitted when the TCP server stops.
-- `ON_CLIENT_CONNECTED(id: u16)`: Emitted after a client connects and completes the handshake with optional authentication.
-- `ON_CLIENT_DISCONNECTED(id: u16)`: Emitted when a client disconnects.
-- `ON_ILLEGAL_SUDUXU_METHOD(payload: Payload)`: Emitted when an illegal method is called.
 
-Example usage:
+<TypeTable
+  type={{
+    ON_TCP_START: {
+      description: "Emitted when the TCP server starts.",
+      type: "() => void",
+    },
+    ON_TCP_STOP: {
+      description: "Emitted when the TCP server stops.",
+      type: "() => void",
+    },
+    ON_CLIENT_CONNECTED: {
+      description:
+        "Emitted after a client connects and completes the handshake with optional authentication.",
+      type: "(id: u16) => void",
+    },
+    ON_CLIENT_DISCONNECTED: {
+      description: "Emitted when a client disconnects.",
+      type: "(id: u16) => void",
+    },
+    ON_ILLEGAL_SUDUXU_METHOD: {
+      description: "Emitted when an illegal method is called.",
+      type: "(payload: Payload) => void",
+    },
+  }}
+/>
 
 ```rs
 ON_CLIENT_CONNECTED.subscribe(|id| {
     println!("Client connected: {}", id);
 });
 ```
-> See Reference/Data-Models for details on the [`Payload`](/docs/reference/data-models#payload) data models.
+
+> See Reference/Data-Models for details on the [`Payload`](/docs/reference/data-models#payload) data model.
 
 </Tab>
 <Tab value="Unity">
-Handled via:
-- `suduxu.OnTcpStart()`: Emitted when the TCP server starts.
-- `suduxu.OnTcpStop()`: Emitted when the TCP server stops.
-- `suduxu.OnClientConnected(id)`: Emitted after a client connects and completes the handshake with optional authentication.
-- `suduxu.OnClientDisconnected(id)`: Emitted when a client disconnects.
-- `suduxu.OnIllegalSuduxuMethod(payload)`: Emitted when an illegal method is called.
 
-Example usage:
+<TypeTable
+  type={{
+    "suduxu.OnTcpStart": {
+      description: "Emitted when the TCP server starts.",
+      type: "() => void",
+    },
+    "suduxu.OnTcpStop": {
+      description: "Emitted when the TCP server stops.",
+      type: "() => void",
+    },
+    "suduxu.OnClientConnected": {
+      description:
+        "Emitted after a client connects and completes the handshake with optional authentication.",
+      type: "(id) => void",
+    },
+    "suduxu.OnClientDisconnected": {
+      description: "Emitted when a client disconnects.",
+      type: "(id) => void",
+    },
+    "suduxu.OnIllegalSuduxuMethod": {
+      description: "Emitted when an illegal method is called.",
+      type: "(payload) => void",
+    },
+  }}
+/>
 
 ```cs
 suduxu.Server.OnClientConnected += id =>
@@ -77,34 +120,49 @@ suduxu.Server.OnClientConnected += id =>
     Debug.Log($"Client connected: {id}");
 };
 ```
-> See Reference/Data-Models for details on the [`Payload`](/docs/reference/data-models#payload) data models.
+
+> See Reference/Data-Models for details on the [`Payload`](/docs/reference/data-models#payload) data model.
 
 </Tab>
 </Tabs>
 
 ---
 
-## UDP-Events
+## UDP events
 
-UDP events cover all real-time device input and sensor data.
-
-Events include:
-- Button input
-- Joystick input
-- Sensor data (accelerometer, gyroscope, etc.)
-- Screenshot events
+Real-time device input and sensor data.
 
 <Tabs items={["Rust", "Unity"]}>
 <Tab value="Rust">
-Handled via:
-- `ON_SENSOR_DATA(sensor_data_raw: SensorDataRaw)`: Emitted when raw sensor data is received.
-- `ON_UDP_START()`: Emitted when the UDP subsystem starts.
-- `ON_UDP_STOP()`: Emitted when the UDP subsystem stops.
-- `ON_BUTTON_INPUT(id: u16, input: ButtonInput)`: Emitted when button input is received from a client.
-- `ON_JOYSTICK_DATA(id: u16, input: JoystickData)`: Emitted when joystick data is received from a client.
-- `ON_SCREENSHOT(id: u16, path: String)`: Emitted when a screenshot is received from a client.
 
-Example usage:
+<TypeTable
+  type={{
+    ON_UDP_START: {
+      description: "Emitted when the UDP subsystem starts.",
+      type: "() => void",
+    },
+    ON_UDP_STOP: {
+      description: "Emitted when the UDP subsystem stops.",
+      type: "() => void",
+    },
+    ON_SENSOR_DATA: {
+      description: "Emitted when raw sensor data is received.",
+      type: "(sensor_data_raw: SensorDataRaw) => void",
+    },
+    ON_BUTTON_INPUT: {
+      description: "Emitted when button input is received from a client.",
+      type: "(id: u16, input: ButtonInput) => void",
+    },
+    ON_JOYSTICK_DATA: {
+      description: "Emitted when joystick data is received from a client.",
+      type: "(id: u16, input: JoystickData) => void",
+    },
+    ON_SCREENSHOT: {
+      description: "Emitted when a screenshot is received from a client.",
+      type: "(id: u16, path: String) => void",
+    },
+  }}
+/>
 
 ```rs
 ON_SENSOR_DATA.subscribe(|data| {
@@ -112,19 +170,39 @@ ON_SENSOR_DATA.subscribe(|data| {
 });
 ```
 
-> See Reference/Data-Models for details on the [`SensorDataRaw`](/docs/reference/data-models#sensordataraw), [`ButtonInput`](/docs/reference/data-models#buttoninput) and [`JoystickData`](/docs/reference/data-models#joystickdata) data models.
+> See Reference/Data-Models for details on the [`SensorDataRaw`](/docs/reference/data-models#sensordataraw), [`ButtonInput`](/docs/reference/data-models#buttoninput), and [`JoystickData`](/docs/reference/data-models#joystickdata) data models.
 
 </Tab>
 <Tab value="Unity">
-Handled via:
-- `suduxu.Input.Broadcast().OnSensorData(sensorDataRaw)`: Emitted when raw sensor data is received.
-- `suduxu.Input.Broadcast().OnUdpStart()`: Emitted when the UDP subsystem starts.
-- `suduxu.Input.Broadcast().OnUdpStop()`: Emitted when the UDP subsystem stops.
-- `suduxu.Input.Broadcast().OnButtonInput(id, input)`: Emitted when button input is received from a client.
-- `suduxu.Input.Broadcast().OnJoystickData(id, input)`: Emitted when joystick data is received from a client.
-- `suduxu.Input.Broadcast().OnScreenshot(id, path)`: Emitted when a screenshot is received from a client.
 
-Example usage:
+<TypeTable
+  type={{
+    "suduxu.Input.Broadcast().OnUdpStart": {
+      description: "Emitted when the UDP subsystem starts.",
+      type: "() => void",
+    },
+    "suduxu.Input.Broadcast().OnUdpStop": {
+      description: "Emitted when the UDP subsystem stops.",
+      type: "() => void",
+    },
+    "suduxu.Input.Broadcast().OnSensorData": {
+      description: "Emitted when raw sensor data is received.",
+      type: "(sensorDataRaw) => void",
+    },
+    "suduxu.Input.Broadcast().OnButtonInput": {
+      description: "Emitted when button input is received from a client.",
+      type: "(id, input) => void",
+    },
+    "suduxu.Input.Broadcast().OnJoystickData": {
+      description: "Emitted when joystick data is received from a client.",
+      type: "(id, input) => void",
+    },
+    "suduxu.Input.Broadcast().OnScreenshot": {
+      description: "Emitted when a screenshot is received from a client.",
+      type: "(id, path) => void",
+    },
+  }}
+/>
 
 ```cs
 suduxu.Input.Broadcast().OnSensorData += data =>
@@ -134,32 +212,54 @@ suduxu.Input.Broadcast().OnSensorData += data =>
 ```
 
 <Callout type="warning">
-Input events that incoorporate the id parameter (including `OnSensorData`) will only trigger for the client matching the id. Use broadcast events for global input handling.
+  Input events that take an `id` parameter (including `OnSensorData`) only
+  trigger for the client matching that id. Use broadcast events for global
+  input handling.
 </Callout>
 
-> See Reference/Data-Models for details on the [`SensorDataRaw`](/docs/reference/data-models#sensordataraw), [`ButtonInput`](/docs/reference/data-models#buttoninput) and [`JoystickData`](/docs/reference/data-models#joystickdata) data models.
+> See Reference/Data-Models for details on the [`SensorDataRaw`](/docs/reference/data-models#sensordataraw), [`ButtonInput`](/docs/reference/data-models#buttoninput), and [`JoystickData`](/docs/reference/data-models#joystickdata) data models.
+
 </Tab>
 </Tabs>
 
 ---
 
-## State-Events
+## State events
 
-State events represent continuous device telemetry.
-- Battery changes
-- Network changes
-- Device availability
+Continuous device telemetry — battery, network, and health.
 
 <Tabs items={["Rust", "Unity"]}>
 <Tab value="Rust">
-Handled via:
-- `ON_BATTERY_CHANGE(id: u16, battery: Battery)`: Emitted when a client's battery state changes (e.g. battery level or charging status).
-- `ON_NETWORK_CHANGE(id: u16, network: Network)`: Emitted when a client's network state changes (e.g. connectivity, type).
-- `ON_HEALTHY(id: u16)`: Emitted when a client responds to a health check in time, indicating it is healthy and responsive.
-- `ON_UNHEALTHY(id: u16)`: Emitted when a client fails to respond to a health check in time, indicating it may be unresponsive or disconnected.
-- `ON_TIMEOUT(id: u16)`: Emitted when a clients responds after the health check timeout has already passed, indicating a potential connectivity issue.
 
-Example usage:
+<TypeTable
+  type={{
+    ON_BATTERY_CHANGE: {
+      description:
+        "Emitted when a client's battery state changes (level or charging status).",
+      type: "(id: u16, battery: Battery) => void",
+    },
+    ON_NETWORK_CHANGE: {
+      description:
+        "Emitted when a client's network state changes (connectivity, type).",
+      type: "(id: u16, network: Network) => void",
+    },
+    ON_HEALTHY: {
+      description:
+        "Emitted when a client responds to a health check in time.",
+      type: "(id: u16) => void",
+    },
+    ON_UNHEALTHY: {
+      description:
+        "Emitted when a client fails to respond to a health check in time.",
+      type: "(id: u16) => void",
+    },
+    ON_TIMEOUT: {
+      description:
+        "Emitted when a client responds after the health check timeout has already passed.",
+      type: "(id: u16) => void",
+    },
+  }}
+/>
 
 ```rs
 ON_BATTERY_CHANGE.subscribe(|(id, battery)| {
@@ -168,16 +268,40 @@ ON_BATTERY_CHANGE.subscribe(|(id, battery)| {
 ```
 
 > See Reference/Data-Models for details on the [`Battery`](/docs/reference/data-models#battery) and [`Network`](/docs/reference/data-models#network) data models.
+
 </Tab>
 <Tab value="Unity">
-Handled via:
-- `suduxu.Client.Broadcast().OnBatteryChange(id, battery)`: Emitted when a client's battery state changes (e.g. battery level or charging status).
-- `suduxu.Client.Broadcast().OnNetworkChange(id, network)`: Emitted when a client's network state changes (e.g. connectivity, type).
-- `suduxu.Client.Broadcast().OnHealthy(id)`: Emitted when a client responds to a health check in time, indicating it is healthy and responsive.
-- `suduxu.Client.Broadcast().OnUnhealthy(id)`: Emitted when a client fails to respond to a health check in time, indicating it may be unresponsive or disconnected.
-- `suduxu.Client.Broadcast().OnTimeout(id)`: Emitted when a clients responds after the health check timeout has already passed, indicating a potential connectivity issue.
 
-Example usage:
+<TypeTable
+  type={{
+    "suduxu.Client.Broadcast().OnBatteryChange": {
+      description:
+        "Emitted when a client's battery state changes (level or charging status).",
+      type: "(id, battery) => void",
+    },
+    "suduxu.Client.Broadcast().OnNetworkChange": {
+      description:
+        "Emitted when a client's network state changes (connectivity, type).",
+      type: "(id, network) => void",
+    },
+    "suduxu.Client.Broadcast().OnHealthy": {
+      description:
+        "Emitted when a client responds to a health check in time.",
+      type: "(id) => void",
+    },
+    "suduxu.Client.Broadcast().OnUnhealthy": {
+      description:
+        "Emitted when a client fails to respond to a health check in time.",
+      type: "(id) => void",
+    },
+    "suduxu.Client.Broadcast().OnTimeout": {
+      description:
+        "Emitted when a client responds after the health check timeout has already passed.",
+      type: "(id) => void",
+    },
+  }}
+/>
+
 ```cs
 suduxu.Client.Broadcast().OnBatteryChange += (id, battery) =>
 {
@@ -186,33 +310,40 @@ suduxu.Client.Broadcast().OnBatteryChange += (id, battery) =>
 ```
 
 <Callout type="warning">
-State events that incorporate the id parameter will only trigger for the client matching the id. Use broadcast events for global state handling.
+  State events that take an `id` parameter only trigger for the client
+  matching that id. Use broadcast events for global state handling.
 </Callout>
 
 > See Reference/Data-Models for details on the [`Battery`](/docs/reference/data-models#battery) and [`Network`](/docs/reference/data-models#network) data models.
+
 </Tab>
 </Tabs>
 
 ---
 
-## Log-Events
-Logs are both emitted from both native and client-side systems.
+## Log events
+
+Emitted from both native and client-side systems.
 
 <Tabs items={["Rust", "Unity"]}>
 <Tab value="Rust">
+
 ```rs
 ON_LOG.subscribe(|log| {
     println!("Log: {:?}", log);
 });
 ```
+
 </Tab>
 <Tab value="Unity">
+
 ```cs
 suduxu.Log.OnLog += (log) =>
 {
     Debug.Log($"Log: {log}");
 };
 ```
+
 </Tab>
 </Tabs>
 
@@ -220,21 +351,15 @@ suduxu.Log.OnLog += (log) =>
 
 ## Event rules
 
-- Events are asynchronous
-- Delivery order is not guaranteed across categories
-- TCP events relate to connection lifecycle only
-- UDP events represent real-time input streams
-- State events reflect periodic device updates
-- Health events may lag behind actual disconnects due to timeout windows
-
----
-
-## Key constraint
-
-Events are only valid after the runtime has been launched. Subscribing before initialization may result in missing early emissions.
+Events are asynchronous, and delivery order isn't guaranteed across categories — TCP events cover connection lifecycle only, UDP events are real-time input streams, state events reflect periodic updates, and health events may lag behind an actual disconnect due to the timeout window.
 
 <Callout type="info">
-In order to use the `suduxu` object in Unity it first needs to be injected, this is achieved the following way:
+  Events are only valid after the runtime has launched — subscribing before
+  initialization may miss early emissions.
+</Callout>
+
+<Callout type="info">
+In Unity, the `suduxu` object must be injected before use:
 
 ```cs
 public class SuduxuExample : MonoBehaviour {
@@ -243,7 +368,8 @@ public class SuduxuExample : MonoBehaviour {
 }
 ```
 
-Otherwise it can also be called like this:
+Or accessed directly:
+
 ```cs
 Suduxu.Instance
 ```

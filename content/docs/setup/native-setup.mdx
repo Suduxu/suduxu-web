@@ -43,26 +43,16 @@ You only need to include the platforms you intend to support.
 
 ## Configuration file
 
-`suduxu.json` defines how the runtime behaves at startup.
+`suduxu.json` defines the runtime's startup behavior by controlling network configuration, security settings, logging behavior, device handling, and theme loading.
 
-It controls:
 
-- Network configuration
-- Security settings
-- Logging behavior
-- Device handling
-- Theme loading
-
-See the Configuration section for full details.
+See the [Configuration section](../reference/config) for full details.
 
 ## Theme directory
 
 The `Files` directory contains all UI themes sent to connected devices.
 
-Suduxu supports:
-
-- HTML themes
-- XML themes
+Suduxu supports HTML and XML themes, which can be used interchangeably in the same project. 
 
 These files are loaded at runtime and can be updated without recompiling your application.
 
@@ -78,18 +68,6 @@ Some environments handle initialization automatically:
 - Other engines may provide similar wrappers in the future
 
 For low-level integrations (Rust, C, C#), you must initialize the runtime manually before calling any API functions.
-
-## Startup behavior
-
-At startup Suduxu:
-
-1. Loads native runtime libraries
-2. Reads `suduxu.json`
-3. Loads available themes
-4. Initializes networking
-5. Waits for clients to connect
-
-If required files are missing, startup may fail or fall back to defaults depending on the integration layer.
 
 ## Next step
 

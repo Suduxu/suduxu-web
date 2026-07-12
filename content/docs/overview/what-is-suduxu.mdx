@@ -4,75 +4,30 @@ icon: CircleQuestionMark
 description: It is a development tool that allows software creators to turn any smartphone into a responsive, custom game controller or companion screen.
 ---
 
+import { Card, Cards } from "fumadocs-ui/components/card";
+
 # What is Suduxu?
 
-Suduxu is a platform that allows applications to use smartphones as custom controllers, companion screens, telemetry displays, and remote interfaces.
+Suduxu turns any smartphone on the same network into a controller, companion screen, or telemetry display for your application — no dedicated hardware required. A host application runs the Suduxu server; phones connect to it as clients and exchange input and feedback in real time.
 
-Instead of requiring dedicated hardware, Suduxu enables devices connected to the same network to communicate with your application in real time.
-
-## Why Suduxu?
-
-Modern smartphones already contain everything needed for rich user interaction:
-
-- Multi-touch displays
-- Motion sensors
-- Network connectivity
-- Audio output
-- Haptic feedback
-- High-resolution screens
-
-Suduxu exposes these capabilities through a simple API, allowing applications to receive input and send feedback without requiring users to install additional hardware.
+Phones already have everything needed for rich interaction — multi-touch, motion sensors, audio, haptics — Suduxu just exposes it through a simple API, so applications get input and can send feedback without asking users to buy anything extra.
 
 ## What can you build?
 
-With Suduxu, a phone can become:
-
-- A game controller
-- A joystick or D-Pad
-- A racing dashboard
-- A flight simulator instrument panel
-- A second-screen experience
-- A remote control
-- A monitoring interface
-- A custom business or industrial control panel
-
-## Core Features
-
-### Real-Time Input
-
-Receive button presses, joystick movement, and sensor data from connected devices.
-
-### Device Feedback
-
-Send vibration, audio playback requests, and log messages directly to connected clients.
-
-### Custom Interfaces
-
-Create fully custom controller layouts using HTML or XML themes rendered directly inside the mobile application.
-
-### Native SDKs
-
-Integrate Suduxu into applications using:
-
-- Rust
-- Unity
-
-### Command Line Tools
-
-Manage servers, configurations, themes, logs, and native libraries through the Suduxu CLI.
+<Cards>
+  <Card title="Game controllers" description="Joysticks, D-pads, and custom button layouts." />
+  <Card title="Instrument panels" description="Racing dashboards or flight-sim gauges." />
+  <Card title="Companion screens" description="Second-screen experiences and remote controls." />
+  <Card title="Control panels" description="Custom monitoring or industrial interfaces." />
+</Cards>
 
 ## How it works
 
-At a high level, Suduxu consists of three parts:
+A host app starts the Suduxu server, phones connect as clients, and input (buttons, joystick, sensors) flows to the host while feedback (vibration, audio, logs) flows back — all over the local network, with the phone's UI defined by an HTML or XML theme rendered on the device. SDKs are available for **Rust** and **Unity**, and a CLI handles servers, configs, themes, and native libraries.
 
-1. A host application running the Suduxu server.
-2. One or more smartphones connected to the server.
-3. A communication layer that exchanges input, device state, and feedback between them.
+## Next steps
 
-The server receives input from connected devices and exposes it through the SDK APIs, while applications can send commands and feedback back to the devices.
-
-## Next Steps
-
-If you want to understand the internal architecture of Suduxu, continue with the **Architecture** section.
-
-If you want to get a server running immediately, head to **Quick Start**.
+<Cards>
+  <Card title="Architecture" href="/architecture" description="See how the server, runtime, and clients fit together." />
+  <Card title="Quick Start" href="/quick-start" description="Get a server running in a few minutes." />
+</Cards>

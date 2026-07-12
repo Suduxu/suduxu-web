@@ -7,9 +7,7 @@ description: Suduxu themes define the visual and interaction layer of a connecte
 import { Callout } from "fumadocs-ui/components/callout";
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 
-Suduxu supports a theme system that defines how a connected device UI is rendered and how user interactions are structured.
-
-Themes are not purely visual templates. They are translated into runtime-native UI representations depending on their format.
+Suduxu supports a theme system that defines how connected device interfaces are rendered and how user interactions are structured, with themes being translated into runtime-native UI representations based on their format rather than acting as purely visual templates.
 
 ---
 
@@ -35,7 +33,7 @@ HTML themes are used when flexible or web-like UI behavior is required.
 
 ---
 
-## Runtime behavior
+## Runtime Behavior
 
 <Tabs items={["XML Themes", "HTML Themes"]}>
 
@@ -43,18 +41,29 @@ HTML themes are used when flexible or web-like UI behavior is required.
 
 XML themes are parsed and compiled into native UI structures.
 
-Flow:
+**Runtime pipeline:**
 
-- XML file is parsed
-- Layout is validated
-- Components are mapped to native widgets
-- Jetpack Compose tree is generated
+```text
+XML File
+   ↓
+Parser
+   ↓
+Layout Validation
+   ↓
+Native Widget Mapping
+   ↓
+Jetpack Compose Tree
+   ↓
+Native UI Rendering
+```
 
-Result:
+**Advantages:**
 
-- Native performance
-- Tight integration with input system
-- Low latency rendering
+| Feature | Description |
+|---------|-------------|
+| Performance | Native rendering with low overhead |
+| Input handling | Tight integration with the input system |
+| Rendering | Low latency UI updates |
 
 </Tab>
 
@@ -62,18 +71,30 @@ Result:
 
 HTML themes are executed inside an embedded WebView.
 
-Flow:
+**Runtime pipeline:**
 
-- HTML file is loaded
-- Assets and scripts are resolved
-- WebView renders layout
-- JavaScript can interact with Suduxu bridge
+```text
+HTML File
+   ↓
+Asset & Script Resolution
+   ↓
+WebView Rendering
+   ↓
+JavaScript Runtime
+   ↓
+Suduxu Bridge Integration
+   ↓
+Custom Controller UI
+```
 
-Result:
+**Advantages:**
 
-- Full web rendering capabilities
-- Flexible UI design
-- Slightly higher overhead compared to XML
+| Feature | Description |
+|---------|-------------|
+| Flexibility | Full web rendering capabilities |
+| Design | Advanced UI customization |
+| Integration | JavaScript access through the Suduxu bridge |
+| Trade-off | Slightly higher runtime overhead than XML |
 
 </Tab>
 

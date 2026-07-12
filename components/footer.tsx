@@ -5,8 +5,8 @@ const COLUMNS: { heading: string; links: { label: string; href: string; external
     heading: 'Resources',
     links: [
       { label: 'Docs', href: '/docs' },
-      { label: 'Config reference', href: '/docs/configuration' },
-      { label: 'Quick start', href: '/docs/quickstart' },
+      { label: 'Config reference', href: '/docs/reference/config' },
+      { label: 'Quick start', href: '/docs/overview/quick-start' },
     ],
   },
   {
@@ -14,13 +14,12 @@ const COLUMNS: { heading: string; links: { label: string; href: string; external
     links: [
       { label: 'Rust SDK', href: 'https://github.com/Suduxu/Suduxu-Rust', external: true },
       { label: 'Unity SDK', href: 'https://github.com/Suduxu/Suduxu-Unity', external: true },
-      { label: 'License', href: '/docs' },
     ],
   },
   {
     heading: 'Project',
     links: [
-      { label: 'GitHub Discussions', href: 'https://github.com/Suduxu', external: true },
+      { label: 'GitHub Discussions', href: 'https://github.com/Suduxu/Suduxu-Hub/discussions', external: true },
       { label: 'Changelog', href: '/docs' },
     ],
   },
@@ -37,8 +36,8 @@ export function Footer() {
               suduxu
             </div>
             <p className="text-fd-muted-foreground text-[13.5px] max-w-[240px]">
-              An open-source runtime for turning phones into real-time controllers
-              and displays for your app.
+              A fast runtime for turning phones into real-time controllers
+              and displays for your applications.
             </p>
           </div>
 
@@ -65,7 +64,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-fd-border flex flex-col md:flex-row md:justify-between gap-2 font-mono text-xs text-fd-muted-foreground">
-          <span>© {new Date().getFullYear()} Suduxu — open source, local network only.</span>
+          <span>© {new Date().getFullYear()} Suduxu — quick setup for your local network.</span>
           <span>Built with Rust + Kotlin Multiplatform</span>
         </div>
       </div>

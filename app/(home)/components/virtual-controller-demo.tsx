@@ -53,10 +53,13 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
   const trailRef = useRef<SVGPolylineElement>(null);
   const trailHistory = useRef<{x: number, y: number}[]>([]);
 
-  const addPhysicsItem = (el: HTMLElement, startX: number, startY: number, startVx: number, startVy: number, width: number, height: number, originalEl: HTMLElement | null = null) => {
+  const addPhysicsItem = (el: HTMLElement, x: number, y: number, startVx: number, startVy: number, width: number, height: number, originalEl: HTMLElement | null = null, vRot = 0, origX?: number, origY?: number) => {
     let isMouseDragging = false;
     el.style.cursor = 'grab';
     el.style.touchAction = 'none';
+    
+    const startX = origX !== undefined ? origX : x;
+    const startY = origY !== undefined ? origY : y;
     
     el.addEventListener('pointerdown', (e) => {
       isMouseDragging = true;
@@ -84,8 +87,9 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
     });
 
     physicsItems.current.push({ 
-      el, x: startX, y: startY, vx: startVx, vy: startVy, w: width, h: height, 
-      startX, startY, createdAt: Date.now(), isMouseDragging: () => isMouseDragging, originalEl, returned: false 
+      el, x, y, vx: startVx, vy: startVy, w: width, h: height, 
+      startX, startY, createdAt: Date.now(), isMouseDragging: () => isMouseDragging, originalEl, returned: false,
+      rot: 0, vRot
     });
   };
 
@@ -121,7 +125,7 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
 
       if (isActive && isVisibleRef.current) {
         trailHistory.current.push({ x: posRef.current.x, y: posRef.current.y });
-        if (trailHistory.current.length > 20) trailHistory.current.shift();
+        if (trailHistory.current.length > 40) trailHistory.current.shift();
         if (trailRef.current) {
           trailRef.current.setAttribute('points', trailHistory.current.map(p => `${p.x},${p.y}`).join(' '));
         }
@@ -177,6 +181,8 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
               if (cy > 0) { p1.y += oy / 2; p2.y -= oy / 2; p1.vy += 0.2; p2.vy -= 0.2; }
               else { p1.y -= oy / 2; p2.y += oy / 2; p1.vy -= 0.2; p2.vy += 0.2; }
             }
+            p1.vRot += (Math.random() - 0.5) * 15;
+            p2.vRot += (Math.random() - 0.5) * 15;
           }
         }
       }
@@ -184,45 +190,58 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
       const groups = new Map();
 
       physicsItems.current.forEach((p) => {
-        if (!p.isMouseDragging()) {
-          if (p.originalEl && Date.now() - p.createdAt > 15000) {
-            p.x += (p.startX - p.x) * 0.12;
-            p.y += (p.startY - p.y) * 0.12;
-            p.vx = 0;
-            p.vy = 0;
-            p.el.style.boxShadow = 'none';
-            p.el.style.border = 'none';
+        const timeAlive = Date.now() - p.createdAt;
+        const returning = p.originalEl && timeAlive > 3000;
 
-            if (Math.abs(p.startX - p.x) < 1 && Math.abs(p.startY - p.y) < 1) {
-              p.x = p.startX;
-              p.y = p.startY;
-              p.returned = true;
-            } else {
-              p.returned = false;
-            }
+        if (returning) {
+          if (p.el.style.pointerEvents !== 'none') {
+            p.el.style.pointerEvents = 'none';
+          }
+          p.x += (p.startX - p.x) * 0.12;
+          p.y += (p.startY - p.y) * 0.12;
+          p.rot += (0 - p.rot) * 0.12;
+          p.vx = 0;
+          p.vy = 0;
+          p.vRot = 0;
+          p.el.style.boxShadow = 'none';
+          p.el.style.border = 'none';
+
+          if (Math.abs(p.startX - p.x) < 1 && Math.abs(p.startY - p.y) < 1 && Math.abs(p.rot) < 1) {
+            p.x = p.startX;
+            p.y = p.startY;
+            p.rot = 0;
+            p.returned = true;
           } else {
-            p.vy += 0.6;
-            p.y += p.vy;
-            p.x += p.vx;
-            
-            if (p.y + p.h > window.innerHeight - 2) {
-              p.y = window.innerHeight - p.h - 2;
-              p.vy *= -0.3;
-              p.vx *= 0.7;
-            }
-            if (p.x < 2) {
-              p.x = 2;
-              p.vx *= -0.5;
-            }
-            if (p.x + p.w > window.innerWidth - 2) {
-              p.x = window.innerWidth - p.w - 2;
-              p.vx *= -0.5;
-            }
             p.returned = false;
           }
+        } else if (!p.isMouseDragging()) {
+          p.vy += 0.6;
+          p.y += p.vy;
+          p.x += p.vx;
+          p.rot += p.vRot;
+          
+          if (p.y + p.h > window.innerHeight - 2) {
+            p.y = window.innerHeight - p.h - 2;
+            p.vy *= -0.3;
+            p.vx *= 0.7;
+            p.vRot *= 0.7;
+          }
+          if (p.x < 2) {
+            p.x = 2;
+            p.vx *= -0.5;
+            p.vRot *= 0.8;
+          }
+          if (p.x + p.w > window.innerWidth - 2) {
+            p.x = window.innerWidth - p.w - 2;
+            p.vx *= -0.5;
+            p.vRot *= 0.8;
+          }
+          p.returned = false;
+        } else {
+          p.returned = false;
         }
         
-        p.el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+        p.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rot}deg)`;
 
         if (p.originalEl) {
           if (!groups.has(p.originalEl)) groups.set(p.originalEl, { total: 0, returned: 0 });
@@ -299,7 +318,11 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
         velRef.current.vx * 1.5,
         Math.max(velRef.current.vy * 1.5, -15),
         carriedRef.current.w,
-        carriedRef.current.h
+        carriedRef.current.h,
+        carriedRef.current.originalEl,
+        (Math.random() - 0.5) * 20,
+        carriedRef.current.origX,
+        carriedRef.current.origY
       );
       
       carriedRef.current = null;
@@ -311,6 +334,9 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
         html: el.innerHTML,
         w: rect.width,
         h: rect.height,
+        originalEl: el,
+        origX: rect.left,
+        origY: rect.top
       };
       carriedRef.current = cloneData;
       setCarried(cloneData);
@@ -393,8 +419,9 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
           
           const vx = (cx / dist) * (Math.random() * 15 + 8);
           const vy = (cy / dist) * (Math.random() * 15 + 8) - 5;
+          const vRot = (Math.random() - 0.5) * 40;
 
-          addPhysicsItem(piece, rect.left + i * w, rect.top + j * h, vx, vy, w, h, el);
+          addPhysicsItem(piece, rect.left + i * w, rect.top + j * h, vx, vy, w, h, el, vRot);
         }
       }
       
@@ -437,11 +464,11 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
       <svg className="pointer-events-none fixed inset-0 z-[99998] h-full w-full transition-opacity duration-500" style={{ opacity: isVisible ? 1 : 0 }}>
         <defs>
           <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feGaussianBlur stdDeviation="4" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
-        <polyline ref={trailRef} fill="none" stroke="var(--brand)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)" className="opacity-70" />
+        <polyline ref={trailRef} fill="none" stroke="var(--brand)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)" className="opacity-80" />
       </svg>
       <VirtualPointer />
       <FloatingController />

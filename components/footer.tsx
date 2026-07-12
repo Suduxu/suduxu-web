@@ -20,7 +20,7 @@ const COLUMNS: { heading: string; links: { label: string; href: string; external
     heading: 'Project',
     links: [
       { label: 'GitHub Discussions', href: 'https://github.com/Suduxu/Suduxu-Hub/discussions', external: true },
-      { label: 'Changelog', href: '/docs' },
+      { label: 'Changelog', href: '/changelog' },
     ],
   },
 ];
@@ -33,7 +33,7 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2 font-mono text-[15px] font-semibold mb-3">
               <span className="inline-block w-[7px] h-[7px] rounded-[1px] bg-brand" />
-              suduxu
+              Suduxu
             </div>
             <p className="text-fd-muted-foreground text-[13.5px] max-w-[240px]">
               A fast runtime for turning phones into real-time controllers

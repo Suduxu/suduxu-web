@@ -19,7 +19,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
-      <body className="flex flex-col min-h-screen font-sans">
+      <body className="flex flex-col min-h-screen w-screen font-sans">
         {/* defaultTheme 'light'; users can toggle. Set to 'dark' to open dark. */}
         <RootProvider theme={{ defaultTheme: 'light' }}>
           {children}

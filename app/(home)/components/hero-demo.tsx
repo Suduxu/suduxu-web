@@ -28,6 +28,8 @@ export function HeroInteractiveDemo({
   const padRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(pos);
   const draggingRef = useRef(isDragging);
+  const lastLoggedPos = useRef<{ x: number; y: number } | null>(null);
+  const seededRef = useRef(false);
 
   useEffect(() => {
     posRef.current = pos;
@@ -46,13 +48,22 @@ export function HeroInteractiveDemo({
   useEffect(() => {
     const timer = setInterval(() => {
       if (draggingRef.current) {
-        addEvent('JOYSTICK', `x: ${Math.round(posRef.current.x)}, y: ${Math.round(posRef.current.y)}`);
+        const { x, y } = posRef.current;
+        const last = lastLoggedPos.current;
+        const changed = !last || Math.round(last.x) !== Math.round(x) || Math.round(last.y) !== Math.round(y);
+        if (changed) {
+          addEvent('JOYSTICK', `x: ${Math.round(posRef.current.x)}, y: ${Math.round(posRef.current.y)}`);
+          lastLoggedPos.current = { x, y };
+        }
       }
     }, tickRate);
     return () => clearInterval(timer);
   }, [addEvent, tickRate]);
 
   useEffect(() => {
+    if (seededRef.current) return;
+    seededRef.current = true;
+
     addEvent('SYSTEM', 'Suduxu initialized');
     addEvent('NETWORK', 'Listening 0.0.0.0:8080');
     addEvent('CLIENT', 'Connected (192.168.1.42)');
@@ -60,6 +71,7 @@ export function HeroInteractiveDemo({
 
   const handlePointerDown = (e: React.PointerEvent) => {
     setIsDragging(true);
+    lastLoggedPos.current = null;
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
     updatePos(e);
   };
@@ -74,6 +86,7 @@ export function HeroInteractiveDemo({
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
     setPos({ x: 0, y: 0 });
     addEvent('JOYSTICK', 'x: 0, y: 0');
+    lastLoggedPos.current = { x: 0, y: 0 };
   };
 
   const updatePos = (e: React.PointerEvent) => {
@@ -90,6 +103,25 @@ export function HeroInteractiveDemo({
       dy = (dy / dist) * maxR;
     }
     setPos({ x: dx, y: dy });
+  };
+
+  const handleButtonDown = (label: string) => (e: React.PointerEvent) => {
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    addEvent('BUTTON', `${label} Down`);
+  };
+
+  const handleButtonUp = (label: string) => (e: React.PointerEvent) => {
+    const el = e.currentTarget as HTMLElement;
+    el.releasePointerCapture(e.pointerId);
+
+    const rect = el.getBoundingClientRect();
+    const stillInside =
+      e.clientX >= rect.left &&
+      e.clientX <= rect.right &&
+      e.clientY >= rect.top &&
+      e.clientY <= rect.bottom;
+
+    addEvent('BUTTON', `${label} ${stillInside ? 'Released' : 'Cancelled'}`);
   };
 
   return (
@@ -115,16 +147,16 @@ export function HeroInteractiveDemo({
             />
           </div>
           <div className="mb-5 mt-auto flex justify-center gap-3">
-             <button 
-               onPointerDown={() => addEvent('BUTTON', 'Action A')}
-               onPointerUp={() => addEvent('BUTTON', 'Action A released')}
-               className="h-8 w-8 rounded-full bg-fd-border hover:bg-fd-muted-foreground transition-colors active:scale-90"
-             />
-             <button 
-               onPointerDown={() => addEvent('BUTTON', 'Action B')}
-               onPointerUp={() => addEvent('BUTTON', 'Action B released')}
-               className="h-8 w-8 rounded-full bg-fd-border hover:bg-fd-muted-foreground transition-colors active:scale-90"
-             />
+            <button
+              onPointerDown={handleButtonDown('Action A')}
+              onPointerUp={handleButtonUp('Action A')}
+              className="h-8 w-8 rounded-full bg-fd-border hover:bg-fd-muted-foreground transition-colors active:scale-90"
+            />
+            <button
+              onPointerDown={handleButtonDown('Action B')}
+              onPointerUp={handleButtonUp('Action B')}
+              className="h-8 w-8 rounded-full bg-fd-border hover:bg-fd-muted-foreground transition-colors active:scale-90"
+            />
           </div>
         </div>
       </div>

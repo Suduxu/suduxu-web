@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { VirtualControllerProvider, HoverSpot } from '../components/virtual-controller-demo';
 import { changelogData } from '@/lib/data/changelog';
+import { parseLinks } from '../components/parse-links';
 
 export default function ChangelogPage() {
   return (
@@ -29,7 +30,7 @@ export default function ChangelogPage() {
                     <div className="mb-6 relative z-10">
                       <h3 className="text-sm font-mono text-fd-foreground mb-3 uppercase tracking-wider">Features</h3>
                       <ul className="list-disc list-inside space-y-2 text-fd-muted-foreground">
-                        {release.features.map((feature, i) => <li key={i}>{feature}</li>)}
+                        {release.features.map((feature, i) => <li key={i}>{parseLinks(feature)}</li>)}
                       </ul>
                     </div>
                   )}
@@ -38,7 +39,7 @@ export default function ChangelogPage() {
                     <div className="relative z-10">
                       <h3 className="text-sm font-mono text-fd-foreground mb-3 uppercase tracking-wider">Fixes</h3>
                       <ul className="list-disc list-inside space-y-2 text-fd-muted-foreground">
-                        {release.fixes.map((fix, i) => <li key={i}>{fix}</li>)}
+                        {release.fixes.map((fix, i) => <li key={i}>{parseLinks(fix)}</li>)}
                       </ul>
                     </div>
                   )}

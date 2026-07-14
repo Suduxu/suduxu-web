@@ -7,6 +7,19 @@ export function baseOptions(): BaseLayoutProps {
       // JSX supported
       title: appName,
     },
+    links: [
+      {
+        type: 'main',
+        text: 'Configurator',
+        url: '/configurator',
+      },
+      {
+        type: 'main',
+        text: 'Suduxu Hub',
+        url: 'https://github.com/Suduxu/Suduxu-Hub',
+        external: true,
+      },
+    ],
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
   };
 }

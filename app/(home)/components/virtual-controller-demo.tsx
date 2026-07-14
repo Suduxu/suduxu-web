@@ -40,9 +40,10 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
   const [hoveredState, setHoveredState] = useState<{ id: string } | null>(null);
   const [carried, setCarried] = useState<any>(null);
 
-  const posRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  const targetPos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const posRef = useRef({ x: 0, y: 0 });
+  const targetPos = useRef({ x: 0, y: 0 });
   const velRef = useRef({ vx: 0, vy: 0 });
+  
   const spotsRef = useRef(new Map<string, React.RefObject<HTMLElement>>());
   const hoveredRef = useRef<any>(null);
   const carriedRef = useRef<any>(null);

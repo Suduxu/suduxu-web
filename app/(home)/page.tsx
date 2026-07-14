@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { HoverSpot, VirtualControllerProvider } from './components/virtual-controller-demo';
 import { HeroInteractiveDemo } from './components/hero-demo';
+import { parseLinks } from './components/parse-links';
 
 const PAGE_DATA = {
   hero: {
@@ -34,7 +35,7 @@ const PAGE_DATA = {
       },
       {
         title: "Configurable",
-        desc: "Ports, authentication, sensors, rate limits, client caps — every server behavior lives in one suduxu.json file you can change without touching code."
+        desc: "Ports, authentication, sensors, rate limits, client caps — every server behavior lives in one suduxu.json file you can change without touching code. For a guided interface, use the built-in [configurator](/configurator)."
       },
       {
         title: "Extensible",
@@ -52,7 +53,7 @@ const PAGE_DATA = {
         colorClass: "bg-brand/20 text-brand",
         handle: "@marcus_rühl",
         role: "Indie Developer",
-        quote: "Turned my old iPhone into a steering wheel for my racing game in 10 minutes. Incredible tool."
+        quote: "Turned my old Google Pixel into a steering wheel for my racing game in 10 minutes. Incredible tool."
       },
       {
         initial: "E",
@@ -199,7 +200,7 @@ export default function HomePage() {
                     <HoverSpot infoText={`Explore ${pillar.title} architecture`} block>
                       <div className="p-2 -m-2">
                         <h3 className="font-display font-semibold text-lg mb-2.5 inline-block cursor-default">{pillar.title}</h3>
-                        <p className="text-fd-muted-foreground text-[14.5px] mt-2">{pillar.desc}</p>
+                        <p className="text-fd-muted-foreground text-[14.5px] mt-2">{parseLinks(pillar.desc)}</p>
                       </div>
                     </HoverSpot>
                   </div>

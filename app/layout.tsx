@@ -2,6 +2,7 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Space_Grotesk, IBM_Plex_Sans, JetBrains_Mono } from 'next/font/google';
 import { cookies } from 'next/headers';
+import Script from 'next/script';
 import { ThemeSync } from '@/components/theme-sync';
 import { normalizeTheme, themeStorageKey } from '@/lib/theme';
 
@@ -26,6 +27,18 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       suppressHydrationWarning
     >
       <body className="flex flex-col min-h-screen w-screen font-sans">
+        <Script id="theme-bootstrap" strategy="beforeInteractive">
+          {`(() => {
+            try {
+              const cookieMatch = document.cookie.match(new RegExp('(?:^|; )${themeStorageKey}=([^;]*)'));
+              const cookieTheme = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
+              const theme = cookieTheme === 'dark' || cookieTheme === 'light' ? cookieTheme : null;
+              if (!theme) return;
+              localStorage.setItem('${themeStorageKey}', theme);
+              document.documentElement.classList.toggle('dark', theme === 'dark');
+            } catch (_) {}
+          })();`}
+        </Script>
         <RootProvider
           theme={{
             defaultTheme: initialTheme,

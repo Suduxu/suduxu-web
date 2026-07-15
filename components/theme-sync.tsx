@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { getThemeCookieValueForHost, normalizeTheme } from '@/lib/theme';
+import { getThemeCookieValue, normalizeTheme } from '@/lib/theme';
 
 export function ThemeSync() {
   const { theme } = useTheme();
@@ -17,7 +17,7 @@ export function ThemeSync() {
       return;
     }
 
-    document.cookie = getThemeCookieValueForHost(normalizedTheme, window.location.hostname);
+    document.cookie = getThemeCookieValue(normalizedTheme);
   }, [theme]);
 
   return null;

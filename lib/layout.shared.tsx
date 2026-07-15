@@ -1,9 +1,7 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import { appName, gitConfig, siteUrl } from './shared';
+import { appName, gitConfig } from './shared';
 
-export function baseOptions(options: { docsHost?: boolean } = {}): BaseLayoutProps {
-  const { docsHost = false } = options;
-
+export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       // JSX supported
@@ -13,7 +11,7 @@ export function baseOptions(options: { docsHost?: boolean } = {}): BaseLayoutPro
       {
         type: 'main',
         text: 'Configurator',
-        url: docsHost ? `${siteUrl}/configurator` : '/configurator',
+        url: '/configurator',
       },
       {
         type: 'main',

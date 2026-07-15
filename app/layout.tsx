@@ -18,7 +18,7 @@ const mono = JetBrains_Mono({
 
 export default async function Layout({ children }: LayoutProps<'/'>) {
   const cookieStore = await cookies();
-  const initialTheme = normalizeTheme(cookieStore.get(themeStorageKey)?.value) ?? 'light';
+  const initialTheme = normalizeTheme(cookieStore.get(themeStorageKey)?.value);
 
   return (
     <html
@@ -32,18 +32,25 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             try {
               const cookieMatch = document.cookie.match(new RegExp('(?:^|; )${themeStorageKey}=([^;]*)'));
               const cookieTheme = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
-              const theme = cookieTheme === 'dark' || cookieTheme === 'light' ? cookieTheme : null;
-              if (!theme) return;
-              localStorage.setItem('${themeStorageKey}', theme);
+              const theme = cookieTheme === 'dark' || cookieTheme === 'light'
+                ? cookieTheme
+                : window.matchMedia('(prefers-color-scheme: dark)').matches
+                  ? 'dark'
+                  : 'light';
+              if (cookieTheme === 'dark' || cookieTheme === 'light') {
+                localStorage.setItem('${themeStorageKey}', cookieTheme);
+              } else {
+                localStorage.removeItem('${themeStorageKey}');
+              }
               document.documentElement.classList.toggle('dark', theme === 'dark');
             } catch (_) {}
           })();`}
         </Script>
         <RootProvider
           theme={{
-            defaultTheme: initialTheme,
+            defaultTheme: initialTheme ?? 'system',
             storageKey: themeStorageKey,
-            enableSystem: false,
+            enableSystem: true,
           }}
         >
           <ThemeSync />

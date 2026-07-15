@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { HoverSpot, VirtualControllerProvider } from './components/virtual-controller-demo';
 import { HeroInteractiveDemo } from './components/hero-demo';
 import { parseLinks } from './components/parse-links';
+import { docsUrl } from '@/lib/shared';
 
 const PAGE_DATA = {
   hero: {
@@ -11,7 +12,7 @@ const PAGE_DATA = {
     title: "Build customizable controllers within minutes",
     description: "Suduxu is a development tool that allows software creators to turn any smartphone into a responsive, custom game controller or companion screen.",
     buttons: [
-      { label: "Get started", href: "/docs", variant: "primary" as const, external: false },
+      { label: "Get started", href: docsUrl, variant: "primary" as const, external: false },
       { label: "View on GitHub", href: "https://github.com/Suduxu/Suduxu-Hub", variant: "ghost" as const, external: true }
     ],
     cliInfo: "Less than 15 seconds to get started",

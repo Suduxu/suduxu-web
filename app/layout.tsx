@@ -1,6 +1,9 @@
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Space_Grotesk, IBM_Plex_Sans, JetBrains_Mono } from 'next/font/google';
+import { cookies } from 'next/headers';
+import { ThemeSync } from '@/components/theme-sync';
+import { normalizeTheme, themeStorageKey } from '@/lib/theme';
 
 const display = Space_Grotesk({
   subsets: ['latin'], variable: '--font-space-grotesk', weight: ['500', '600', '700'],
@@ -12,7 +15,10 @@ const mono = JetBrains_Mono({
   subsets: ['latin'], variable: '--font-jetbrains-mono', weight: ['400', '500', '600'],
 });
 
-export default function Layout({ children }: LayoutProps<'/'>) {
+export default async function Layout({ children }: LayoutProps<'/'>) {
+  const cookieStore = await cookies();
+  const initialTheme = normalizeTheme(cookieStore.get(themeStorageKey)?.value) ?? 'light';
+
   return (
     <html
       lang="en"
@@ -20,8 +26,14 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       suppressHydrationWarning
     >
       <body className="flex flex-col min-h-screen w-screen font-sans">
-        {/* defaultTheme 'light'; users can toggle. Set to 'dark' to open dark. */}
-        <RootProvider theme={{ defaultTheme: 'light' }}>
+        <RootProvider
+          theme={{
+            defaultTheme: initialTheme,
+            storageKey: themeStorageKey,
+            enableSystem: false,
+          }}
+        >
+          <ThemeSync />
           {children}
         </RootProvider>
       </body>

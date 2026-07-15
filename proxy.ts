@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isMarkdownPreferred, rewritePath } from 'fumadocs-core/negotiation';
-import { docsContentRoute, docsRoute } from '@/lib/shared';
+import { docsContentRoute, docsRoute, docsUrl, siteUrl } from '@/lib/shared';
 
 const { rewrite: rewriteDocs } = rewritePath(
   `${docsRoute}{/*path}`,
@@ -18,10 +18,18 @@ export default function proxy(request: NextRequest) {
   const isDocsHost = host === DOCS_HOST || host.startsWith(`${DOCS_HOST}:`);
   const pathname = request.nextUrl.pathname;
 
+  if (!isDocsHost && (pathname === docsRoute || pathname.startsWith(`${docsRoute}/`))) {
+    const redirectUrl = new URL(`${docsUrl}${pathname.slice(docsRoute.length) || '/'}`, request.nextUrl);
+    redirectUrl.search = request.nextUrl.search;
+    return NextResponse.redirect(redirectUrl, 308);
+  }
+
   const effectivePathname = isDocsHost
-    ? pathname === '/'
+    ? pathname === '/' || pathname === docsRoute
       ? docsRoute
-      : `${docsRoute}${pathname}`
+      : pathname.startsWith(`${docsRoute}/`)
+        ? pathname
+        : `${docsRoute}${pathname}`
     : pathname;
 
   const suffixResult = rewriteSuffix(effectivePathname);

@@ -10,7 +10,7 @@ interface CursorContextType {
   setIsActive: (val: boolean) => void;
   setPos: (val: { x: number; y: number }) => void;
   sensitivity: number;
-  registerSpot: (id: string, ref: React.RefObject<HTMLElement>) => void;
+  registerSpot: (id: string, ref: React.RefObject<HTMLElement | null>) => void;
   unregisterSpot: (id: string) => void;
   triggerA: () => void;
   triggerB: () => void;
@@ -44,7 +44,7 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
   const targetPos = useRef({ x: 0, y: 0 });
   const velRef = useRef({ vx: 0, vy: 0 });
   
-  const spotsRef = useRef(new Map<string, React.RefObject<HTMLElement>>());
+  const spotsRef = useRef(new Map<string, React.RefObject<HTMLElement | null>>());
   const hoveredRef = useRef<any>(null);
   const carriedRef = useRef<any>(null);
   const physicsItems = useRef<any[]>([]);
@@ -453,7 +453,7 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
     targetPos.current = newPos;
   };
 
-  const registerSpot = (id: string, ref: React.RefObject<HTMLElement>) => spotsRef.current.set(id, ref);
+  const registerSpot = (id: string, ref: React.RefObject<HTMLElement | null>) => spotsRef.current.set(id, ref);
   const unregisterSpot = (id: string) => spotsRef.current.delete(id);
 
   return (

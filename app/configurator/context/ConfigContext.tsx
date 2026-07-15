@@ -1,6 +1,9 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { ConfigSchema, ConfigType } from "../lib/schema";
+import { ConfigSchema } from "../lib/schema";
+import type { z } from "zod";
+
+type ConfigType = z.infer<typeof ConfigSchema>;
 import { setNestedValue } from "../lib/utils";
 
 type ConfigContextType = {
@@ -13,18 +16,16 @@ const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<ConfigType>(ConfigSchema.parse({}));
   useEffect(() => {
-    if (config.server.increment_port) {
-      setConfig((prev) => ({
-        ...prev,
-        server: {
-          ...prev.server,
-          tcp_port: prev.server.port + 1,
-          udp_port: prev.server.port + 2,
-          file_port: prev.server.port + 3,
-        },
-      }));
-    }
-  }, [config.server.increment_port, config.server.port]);
+    setConfig((prev) => ({
+      ...prev,
+      server: {
+        ...prev.server,
+        tcp_port: prev.server.port + 1,
+        udp_port: prev.server.port + 2,
+        file_port: prev.server.port + 3,
+      },
+    }));
+  }, [config.server.port]);
   const handleChange = (path: string[], value: any) => {
     setConfig((prev) => {
       const copy = JSON.parse(JSON.stringify(prev));

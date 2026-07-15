@@ -1,14 +1,24 @@
 import { ConfigSchema } from '../lib/schema';
-import React, { useEffect } from 'react';
-import { ZodObject, ZodType, ZodDefault, ZodEnum, ZodArray } from 'zod';
+import { useEffect } from 'react';
+import { ZodObject, ZodDefault, ZodEnum, ZodArray } from 'zod';
+
+type SchemaDetail = {
+  key: string;
+  category: string;
+  path: string;
+  type: string;
+  defaultValue: unknown;
+  options?: unknown[];
+  details?: SchemaDetail[];
+};
 
 // Utility to recursively extract schema details
 const extractSchemaDetails = (
-  schemaShape,
+  schemaShape: Record<string, unknown>,
   category = 'Root',
-  path = []
-) => {
-  const result = [];
+  path: string[] = []
+): SchemaDetail[] => {
+  const result: SchemaDetail[] = [];
 
   for (const key in schemaShape) {
     if (schemaShape.hasOwnProperty(key)) {
@@ -20,7 +30,13 @@ const extractSchemaDetails = (
 
       // 1. Handle ZodDefault (to get the default value)
       if (zodType instanceof ZodDefault) {
-        defaultValue = zodType._def.defaultValue();
+        // _def.defaultValue can be a function that returns the default or a value; its type is unknown
+        const maybeDefault = (zodType._def as any).defaultValue;
+        try {
+          defaultValue = typeof maybeDefault === 'function' ? maybeDefault() : maybeDefault;
+        } catch (e) {
+          defaultValue = undefined;
+        }
         zodType = zodType._def.innerType; // Get the inner type
       }
 
@@ -44,15 +60,13 @@ const extractSchemaDetails = (
         continue; // Skip further processing for this object
       } else if (zodType instanceof ZodEnum) {
         typeName = 'enum';
-        options = zodType._def.values;
+        options = Array.isArray((zodType._def as any).values)
+          ? (zodType._def as any).values
+          : Object.values((zodType._def as any).entries ?? {});
       } else if (zodType instanceof ZodArray) {
         typeName = 'array';
-        // You could also extract the type of the array items here:
-        // const arrayItemType = zodType._def.type._def.typeName;
-        // typeName = `array<${arrayItemType}>`;
       } else {
-        // Standard Zod Types (string, number, boolean)
-        typeName = zodType._def.typeName.replace('Zod', '').toLowerCase();
+        typeName = ((zodType as any)._def?.typeName ?? '').replace('Zod', '').toLowerCase();
       }
       
       // 3. Push the field details

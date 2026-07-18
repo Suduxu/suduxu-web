@@ -54,7 +54,7 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
   const trailRef = useRef<SVGPolylineElement>(null);
   const trailHistory = useRef<{x: number, y: number}[]>([]);
 
-  const addPhysicsItem = (el: HTMLElement, x: number, y: number, startVx: number, startVy: number, width: number, height: number, originalEl: HTMLElement | null = null, vRot = 0, origX?: number, origY?: number) => {
+  const addPhysicsItem = (el: HTMLElement, x: number, y: number, startVx: number, startVy: number, width: number, height: number, originalEl: HTMLElement | null = null, vRot = 0, origX?: number, origY?: number, offsetX = 0, offsetY = 0) => {
     let isMouseDragging = false;
     el.style.cursor = 'grab';
     el.style.touchAction = 'none';
@@ -90,7 +90,7 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
     physicsItems.current.push({ 
       el, x, y, vx: startVx, vy: startVy, w: width, h: height, 
       startX, startY, createdAt: Date.now(), isMouseDragging: () => isMouseDragging, originalEl, returned: false,
-      rot: 0, vRot
+      rot: 0, vRot, offsetX, offsetY
     });
   };
 
@@ -196,8 +196,8 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
 
         if (returning) {
           const targetRect = p.originalEl.getBoundingClientRect();
-          const targetX = targetRect.left;
-          const targetY = targetRect.top;
+          const targetX = targetRect.left + p.offsetX;
+          const targetY = targetRect.top + p.offsetY;
 
           if (p.el.style.pointerEvents !== 'none') {
             p.el.style.pointerEvents = 'none';
@@ -432,7 +432,14 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
           const vy = (cy / dist) * (Math.random() * 15 + 8) - 5;
           const vRot = (Math.random() - 0.5) * 40;
 
-          addPhysicsItem(piece, rect.left + i * w, rect.top + j * h, vx, vy, w, h, el, vRot);
+          addPhysicsItem(
+            piece,
+            rect.left + i * w,
+            rect.top + j * h,
+            vx, vy, w, h, el, vRot,
+            undefined, undefined,
+            i * w, j * h
+          );
         }
       }
       

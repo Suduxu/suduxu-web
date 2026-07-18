@@ -195,11 +195,15 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
         const returning = p.originalEl && timeAlive > 3000;
 
         if (returning) {
+          const targetRect = p.originalEl.getBoundingClientRect();
+          const targetX = targetRect.left;
+          const targetY = targetRect.top;
+
           if (p.el.style.pointerEvents !== 'none') {
             p.el.style.pointerEvents = 'none';
           }
-          p.x += (p.startX - p.x) * 0.12;
-          p.y += (p.startY - p.y) * 0.12;
+          p.x += (targetX - p.x) * 0.12;
+          p.y += (targetY - p.y) * 0.12;
           p.rot += (0 - p.rot) * 0.12;
           p.vx = 0;
           p.vy = 0;
@@ -207,9 +211,9 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
           p.el.style.boxShadow = 'none';
           p.el.style.border = 'none';
 
-          if (Math.abs(p.startX - p.x) < 1 && Math.abs(p.startY - p.y) < 1 && Math.abs(p.rot) < 1) {
-            p.x = p.startX;
-            p.y = p.startY;
+          if (Math.abs(targetX - p.x) < 1 && Math.abs(targetY - p.y) < 1 && Math.abs(p.rot) < 1) {
+            p.x = targetX;
+            p.y = targetY;
             p.rot = 0;
             p.returned = true;
           } else {
@@ -278,20 +282,26 @@ export function VirtualControllerProvider({ children, sensitivity = 0.3 }: { chi
     return () => cancelAnimationFrame(frame);
   }, [isActive]);
 
-  useEffect(() => {
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const dy = window.scrollY - lastY;
-      lastY = window.scrollY;
-      physicsItems.current.forEach(p => {
-        if (!p.isMouseDragging() && (!p.originalEl || Date.now() - p.createdAt <= 3000)) {
-          p.vy -= Math.max(-6, Math.min(6, dy * 0.05));
-        }
-      });
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+      useEffect(() => {
+        return () => {
+          if (carriedRef.current?.originalEl) {
+            carriedRef.current.originalEl.style.opacity = '';
+            carriedRef.current.originalEl.removeAttribute('data-exploded');
+          }
+
+          physicsItems.current.forEach((p) => {
+            if (p.originalEl) {
+              p.originalEl.style.opacity = '';
+              p.originalEl.removeAttribute('data-exploded');
+            }
+            p.el.remove();
+          });
+
+          physicsItems.current = [];
+          hoveredRef.current = null;
+          carriedRef.current = null;
+        };
+      }, []);
 
   const triggerA = () => {
     lastMoved.current = Date.now();

@@ -162,12 +162,17 @@ const renderField = (
   }
 
   if (typeof value === "string" || typeof value === "number") {
+    const isSensorTransmissionRate =
+      currentPath.join(".") === "devices.initial_sensor_transmission_rate";
+
     return (
       <InputField
         key={currentPath.join(".")}
         label={label}
         type={typeof value === "number" ? "number" : "text"}
         value={value}
+        min={isSensorTransmissionRate ? 10 : undefined}
+        max={isSensorTransmissionRate ? 200 : undefined}
         onChange={(v) =>
           handleChange(currentPath, typeof value === "number" ? Number(v) : v)
         }

@@ -6,6 +6,6 @@ export const docsContentRoute = '/llms.mdx/docs';
 
 export const gitConfig = {
   user: 'Suduxu',
-  repo: 'Suduxu-Rust',
+  repo: 'Suduxu-Hub',
   branch: 'main',
 };

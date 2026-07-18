@@ -85,18 +85,18 @@ for_client(id).send_sensor_data(true);
 
 This command enables or disables the flow of sensor data from the client device.
 
-## Frame rate
+## Sensor transmission rate
 
 ```rust
-for_client(id).set_frame_rate(60);
+for_client(id).set_sensor_transmission_rate(60);
 ```
 
 <Callout type="info">
-The frame rate can be set to any value between 10 and 200 FPS.
+The sensor transmission rate can be set to any value between 10 and 200 FPS.
 </Callout>
 
 <Callout type="warning">
-Setting the frame rate to a very high value may impact performance. Furthermore clients can decide in the settings, what their maximum frame rate is, so the command may not always succeed in setting the desired frame rate, although it will be clamped to the maximum supported by the client.
+Setting the sensor transmission rate to a very high value may impact performance. Furthermore clients can decide in the settings, what their maximum sensor transmission rate is, so the command may not always succeed in setting the desired sensor transmission rate, although it will be clamped to the maximum supported by the client.
 </Callout>
 
 ## Logging
@@ -136,16 +136,16 @@ suduxu.Client.For(id).SendSensorData(true);
 ```
 This command enables or disables the flow of sensor data from the client device.
 
-## Frame rate
+## Sensor transmission rate
 
 ```cs
-suduxu.Client.For(id).SetFrameRate(60);
+suduxu.Client.For(id).SetSensorTransmissionRate(60);
 ```
 <Callout type="info">
-The frame rate can be set to any value between 10 and 200 FPS.
+The sensor transmission rate can be set to any value between 10 and 200 FPS.
 </Callout>
 <Callout type="warning">
-Setting the frame rate to a very high value may impact performance. Furthermore clients can decide in the settings, what their maximum frame rate is, so the command may not always succeed in setting the desired frame rate, although it will be clamped to the maximum supported by the client.
+Setting the sensor transmission rate to a very high value may impact performance. Furthermore clients can decide in the settings, what their maximum sensor transmission rate is, so the command may not always succeed in setting the desired sensor transmission rate, although it will be clamped to the maximum supported by the client.
 </Callout>
 
 ## Logging

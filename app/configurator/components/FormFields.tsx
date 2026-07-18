@@ -15,19 +15,53 @@ export function InputField({
   value,
   onChange,
   type = "text",
+  min,
+  max,
 }: {
   label: string;
   value: string | number;
   onChange: (value: string | number) => void;
   type?: string;
+  min?: number;
+  max?: number;
 }) {
+  const handleChange = (rawValue: string) => {
+    if (type !== "number") {
+      onChange(rawValue);
+      return;
+    }
+
+    if (rawValue === "") {
+      return;
+    }
+
+    const nextValue = Number(rawValue);
+    if (Number.isNaN(nextValue)) {
+      return;
+    }
+
+    if (min !== undefined && nextValue < min) {
+      onChange(min);
+      return;
+    }
+
+    if (max !== undefined && nextValue > max) {
+      onChange(max);
+      return;
+    }
+
+    onChange(nextValue);
+  };
+
   return (
     <div className="mb-6 last:mb-0">
       <label className={labelStyle}>{label}</label>
       <Input
         type={type}
         value={String(value)}
-        onChange={(e) => onChange(e.target.value)}
+        min={min}
+        max={max}
+        onChange={(e) => handleChange(e.target.value)}
         className={inputStyle}
       />
     </div>

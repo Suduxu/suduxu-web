@@ -53,7 +53,7 @@ export const ConfigSchema = z.object({
     })
     .default({
       enabled: true,
-      password: 0,
+      password: 258000,
     }),
   file_sharing: z.object({
     enabled: z.boolean().default(true),
@@ -84,13 +84,13 @@ export const ConfigSchema = z.object({
       allowed_device_types: z
         .array(z.enum(["Android", "iOS", "Windows", "Linux", "macOS", "Other"]))
         .default(["Android", "iOS", "Windows", "Linux", "macOS", "Other"]),
-      initial_frame_rate: z.number().default(60),
+      initial_sensor_transmission_rate: z.number().int().min(10).max(200).default(60),
     })
     .default({
       initially_send_sensor_data: true,
       max_devices: 8,
       allowed_device_types: ["Android", "iOS", "Windows", "Linux", "macOS", "Other"],
-      initial_frame_rate: 60,
+      initial_sensor_transmission_rate: 60,
     }),
   screen_capture: z
     .object({

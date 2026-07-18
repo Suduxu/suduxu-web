@@ -81,7 +81,7 @@ pub struct Devices {
     pub initially_send_sensor_data: bool,
     pub max_devices: Option<u16>,
     pub allowed_device_types: Vec<OsType>,
-    pub initial_frame_rate: u16,
+    pub initial_sensor_transmission_rate: u16,
 }
 
 pub struct ScreenCapture {
@@ -225,7 +225,7 @@ public class Devices
     public bool initiallySendSensorData;
     public ushort? maxDevices;
     public List<Os> allowedDeviceTypes;
-    public ushort initialFrameRate;
+    public ushort initialSensorTransmissionRate;
 }
 
 public class ScreenCapture

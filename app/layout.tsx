@@ -26,9 +26,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <link rel="icon" type="image/x-icon" href="/favicon.ico"></link>
-      </head>
       <body className="flex flex-col min-h-screen w-screen font-sans">
         <Script id="theme-bootstrap" strategy="beforeInteractive">
           {`(() => {

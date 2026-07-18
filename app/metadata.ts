@@ -5,7 +5,7 @@ export const siteMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: `${appName} — Turn any phone into a controller for your app`,
-    template: `%s · ${appName}`,
+    template: `${appName} · %s`,
   },
   description:
     'Suduxu streams real-time input and feedback between phones and your app over the local network. Rust backend, KMP client, TCP + UDP, open source.',
